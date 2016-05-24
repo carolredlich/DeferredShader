@@ -12,9 +12,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "SphereShader.h"
+#include "TriangleShader.h"
 
-SphereShader::SphereShader( std::string vertexShaderFileName,
+TriangleShader::TriangleShader( std::string vertexShaderFileName,
                             std::string geometryShaderFileName,
                             std::string fragmentShaderFileName )
 {
@@ -63,17 +63,17 @@ SphereShader::SphereShader( std::string vertexShaderFileName,
 }
 
 
-SphereShader::SphereShader( const SphereShader& orig )
+TriangleShader::TriangleShader( const TriangleShader& orig )
 {
 }
 
 
-SphereShader::~SphereShader()
+TriangleShader::~TriangleShader()
 {
 }
 
 
-void SphereShader::setMvpMatrix( double* mvp )
+void TriangleShader::setMvpMatrix( double* mvp )
 {
     for( int i = 0; i < 16; i++ )
     {
@@ -82,7 +82,7 @@ void SphereShader::setMvpMatrix( double* mvp )
 }
 
 
-void SphereShader::setMvMatrix( double* mv )
+void TriangleShader::setMvMatrix( double* mv )
 {
     unsigned int j = 0;
     for( int i = 0; i < 16; i++ )
@@ -92,7 +92,7 @@ void SphereShader::setMvMatrix( double* mv )
 }
 
 
-void SphereShader::setMMatrix( double* m )
+void TriangleShader::setMMatrix( double* m )
 {
     unsigned int j = 0;
     for( int i = 0; i < 16; i++ )
@@ -102,7 +102,7 @@ void SphereShader::setMMatrix( double* m )
 }
 
 
-void SphereShader::setVMatrix( double* v )
+void TriangleShader::setVMatrix( double* v )
 {
     unsigned int j = 0;
     for( int i = 0; i < 16; i++ )
@@ -112,7 +112,7 @@ void SphereShader::setVMatrix( double* v )
 }
 
 
-void SphereShader::setNormalMatrix( double* normal )
+void TriangleShader::setNormalMatrix( double* normal )
 {
     for( int i = 0; i < 9; i++ )
     {
@@ -121,33 +121,33 @@ void SphereShader::setNormalMatrix( double* normal )
 }
 
 
-void SphereShader::setVertices( double* vertices, int n )
+void TriangleShader::setVertices( double* vertices, int n )
 {
     _vertex = vertices;
     _nVertices = n;
 }
 
 
-void SphereShader::setTexCoord( double* texCoord )
+void TriangleShader::setTexCoord( double* texCoord )
 {
     _texCoords = texCoord;
 }
 
 
-void SphereShader::setNormal( double* normal )
+void TriangleShader::setNormal( double* normal )
 {
     _normal = normal;
 }
 
 
-void SphereShader::setTangentAndBitangent( double* tangent, double* bitangent )
+void TriangleShader::setTangentAndBitangent( double* tangent, double* bitangent )
 {
     _tangent = tangent;
     _bitangent = bitangent;
 }
 
 
-void SphereShader::setEye( double* eye )
+void TriangleShader::setEye( double* eye )
 {
     _eye[ 0 ] = eye[ 0 ];
     _eye[ 1 ] = eye[ 1 ];
@@ -155,7 +155,7 @@ void SphereShader::setEye( double* eye )
 }
 
 
-void SphereShader::setLight( float* lightPosition, float* lightDifuse,
+void TriangleShader::setLight( float* lightPosition, float* lightDifuse,
                              float* lightSpecular, float* lightAmbient )
 {
     memcpy( _lightPosition, lightPosition, 4 * sizeof ( float ) );
@@ -165,7 +165,7 @@ void SphereShader::setLight( float* lightPosition, float* lightDifuse,
 }
 
 
-void SphereShader::loadVariables()
+void TriangleShader::loadVariables()
 {
     if( !isAllocated() )
     {
@@ -173,6 +173,7 @@ void SphereShader::loadVariables()
     }
 
     unsigned int parameterVertex = glGetAttribLocation( _glShader, "vertex_MS" );
+    glBindBuffer(GL_ARRAY_BUFFER, parameterVertex);
     glVertexAttribPointer( parameterVertex, 3, GL_DOUBLE, GL_FALSE, 0, _vertex );
     glEnableVertexAttribArray( parameterVertex );
 
@@ -184,24 +185,28 @@ void SphereShader::loadVariables()
     glVertexAttribPointer( parameterTexCoord, 2, GL_DOUBLE, GL_FALSE, 0, _texCoords );
     glEnableVertexAttribArray( parameterTexCoord );
 
-    unsigned int parameterTangent = glGetAttribLocation( _glShader, "tangent_MS" );
-    glVertexAttribPointer( parameterTangent, 3, GL_DOUBLE, GL_FALSE, 0, _tangent );
-    glEnableVertexAttribArray( parameterTangent );
-
-    unsigned int parameterBitangent = glGetAttribLocation( _glShader, "bitangent_MS" );
-    glVertexAttribPointer( parameterBitangent, 3, GL_DOUBLE, GL_FALSE, 0, _bitangent );
-    glEnableVertexAttribArray( parameterBitangent );
-
     //Camera
     unsigned int parameterEye = glGetUniformLocation( _glShader, "eyePos_WS" );
     glUniform3f( parameterEye, _eye[ 0 ], _eye[ 1 ], _eye[ 2 ] );
 
     //Textura
+
     unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "colorTextureSampler" );
     glUniform1i( parameterTexture1, 0 );
 
     unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "normalTextureSampler" );
     glUniform1i( parameterTexture2, 1 );
+    
+    unsigned int parameterTexture3 = glGetUniformLocation( _glShader, "PositionTex" );
+    glUniform1i( parameterTexture3, 2 );
+
+//    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
+//    glUniform1i( parameterTexture1, 1 );
+//    
+//    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "ColorTex" );
+//    glUniform1i( parameterTexture2, 2 );
+    
+    
 
     //LUZ
     unsigned int parameterLightPosition = glGetUniformLocation( _glShader, "lightPos_WS" );
@@ -237,7 +242,7 @@ void SphereShader::loadVariables()
 }
 
 
-std::string SphereShader::readFile( const char* name )
+std::string TriangleShader::readFile( const char* name )
 {
     std::ifstream in( name );
     std::string shader;
@@ -256,4 +261,32 @@ std::string SphereShader::readFile( const char* name )
     return shader;
 }
 
+void TriangleShader::setShaderPrograms( std::string vertexShaderFileName,
+                  std::string fragmentShaderFileName)
+{
+    std::string vertexShader = readFile( vertexShaderFileName.c_str() );
+    std::string fragmentShader = readFile( fragmentShaderFileName.c_str() );
 
+
+    std::cout << "Vertex Shader" << std::endl;
+    std::cout << vertexShader << std::endl << std::endl << std::endl;
+    std::cout << "Fragment Shader" << std::endl;
+    std::cout << fragmentShader << std::endl << std::endl << std::endl;
+
+    //Define os programas.
+    if( vertexShader.size() > 0 )
+    {
+        setVertexProgram( vertexShader.c_str(), vertexShader.size() );
+    }
+    if( fragmentShader.size() > 0 )
+    {
+        setFragmentProgram( fragmentShader.c_str(), fragmentShader.size() );
+    }
+}
+
+
+    unsigned int TriangleShader::getShaderId()
+    {
+        return _glShader;
+    }
+    

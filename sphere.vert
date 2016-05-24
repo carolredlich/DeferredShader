@@ -12,20 +12,17 @@ in vec2 texCoord_MS;
 in vec3 tangent_MS;
 in vec3 bitangent_MS;
 
+out vec3 lightDir_CS;
 
 smooth out vec3 lightDir_TS;
 smooth out vec2 texCoordFrag_MS;
 smooth out vec3 eyeDir_TS;
-
 smooth out vec3 vertex_CS;
-smooth out vec3 lightDir_CS;
-
-smooth out vec3 normal_CS;
 
 
 void main( void )
 {
-    normal_CS = normalMatrix * normalize( normal_MS );
+    vec3 normal_CS = normalMatrix * normalize( normal_MS );
     vec3 tangent_CS = normalMatrix * normalize( tangent_MS );
     vec3 bitangent_CS = normalMatrix * normalize( bitangent_MS );
 
@@ -33,7 +30,7 @@ void main( void )
 
     vec3 light_CS = ( v * vec4( lightPos_WS, 1 ) ).xyz;
     vertex_CS = ( mv * vec4( vertex_MS, 1 ) ).xyz;
-
+    
     lightDir_CS = light_CS - vertex_CS;
     vec3 eyeDir_CS = -vertex_CS;
 
@@ -48,5 +45,4 @@ void main( void )
     //Projeta as coordendas do vertice.
     gl_Position = mvp * vec4( vertex_MS, 1.0f );
 }
-
 

@@ -10,7 +10,7 @@
 
 
 
-#include "SphereShader.h"
+#include "TriangleShader.h"
 #include "OpenGLMatrixManager.h"
 #include "Surface.h"
 
@@ -25,8 +25,7 @@ extern "C" {
 #include <iup/iup.h>
 #include <iup/iupgl.h>
 
-class MainWindow
-{
+class MainWindow {
 public:
     /**
      * Construtor default da classe.
@@ -54,6 +53,9 @@ public:
 private:
     Ihandle* _dialog;
 
+    int _width;
+    int _height;
+
     // Matriz de model
     OpenGLMatrixManager _modelMatrix;
 
@@ -73,6 +75,8 @@ private:
     Image* _textureImg[ 2 ];
     GLuint _textureId[ 2 ];
 
+    GLuint _deferredFBO;
+    GLuint _quad_vertexbuffer;
 
 private:
 
@@ -96,8 +100,11 @@ private:
      * @param width - nova larguda do canvas.
      * @param height - nova altura do canvas.
      */
-    void resizeCanvas( int width, int height );
+    void resizeCanvas(int width, int height);
 
+    void createGBufferTex(GLenum texUnit, GLenum format, GLuint &texId);
+
+    void initDeferredShader();
 
 
 private:
@@ -106,14 +113,14 @@ private:
      * @param button - ihandle do botao de sair.
      * @return - retorna IUP_CLOSE para que a janela seja fechada.
      */
-    static int exitButtonCallback( Ihandle* button );
+    static int exitButtonCallback(Ihandle* button);
 
     /**
      * Callback responsavel por receber evento de redesenho do canvas.
      * @param canvas - ponteiro para o canvas.
      * @return  - IUP_DEFAULT.
      */
-    static int actionCanvasCallback( Ihandle* canvas );
+    static int actionCanvasCallback(Ihandle* canvas);
 
     /**
      * Callback responsavel por receber eventos do whell do mouse no canvas para
@@ -126,8 +133,8 @@ private:
      * momento que o evento foi gerado.
      * @return - IUP_DEFAULT.
      */
-    static int wheelCanvasCallback( Ihandle* canvas, float delta, int x,
-                                    int y, char* status );
+    static int wheelCanvasCallback(Ihandle* canvas, float delta, int x,
+            int y, char* status);
 
     /**
      * Callback responsavel por receber eventos de resize do canvas.
@@ -136,7 +143,7 @@ private:
      * @param heigth - nova altura, em pixeis, da janela.
      * @return - IUP_DEFAULT.
      */
-    static int resizeCanvasCallback( Ihandle* canvas, int width, int height );
+    static int resizeCanvasCallback(Ihandle* canvas, int width, int height);
 
     /**
      * Callback responsavel por receber eventos de teclado do canvas.
@@ -150,8 +157,8 @@ private:
      * momento que o evento foi gerado.
      * @return - IUP_DEFAULT.
      */
-    static int buttonCanvasCallback( Ihandle* canvas, int button, int pressed,
-                                     int x, int y, char* status );
+    static int buttonCanvasCallback(Ihandle* canvas, int button, int pressed,
+            int x, int y, char* status);
 };
 
 #endif  /* IUPGLCANVASDUMMY_H */

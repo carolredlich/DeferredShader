@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <cmath>
 
-Surface::Surface( SphereShader* shader )
+Surface::Surface( TriangleShader* shader )
 {
     _shader = shader;
 
@@ -29,7 +29,7 @@ Surface::~Surface()
 }
 
 
-Surface::Surface( std::string fileName, SphereShader* shader )
+Surface::Surface( std::string fileName, TriangleShader* shader )
 {
     loadMesh( fileName );
     _shader = shader;

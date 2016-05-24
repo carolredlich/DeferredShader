@@ -11,17 +11,17 @@
 #include "GraphicsShader.h"
 #include <string>
 
-class SphereShader :
+class TriangleShader :
     public GraphicsShader
 {
 public:
-    SphereShader( std::string vertexShaderFileName = "sphere.vert",
+    TriangleShader( std::string vertexShaderFileName = "sphere.vert",
                   std::string geometryShaderFileName = "sphere.geom",
                   std::string fragmentShaderFileName = "sphere.frag" );
 
-    SphereShader( const SphereShader& orig );
+    TriangleShader( const TriangleShader& orig );
 
-    virtual ~SphereShader();
+    virtual ~TriangleShader();
 
     void setMvpMatrix( double* mvp );
 
@@ -45,8 +45,13 @@ public:
 
     void setLight( float* lightPosition, float* lightDifuse,
                    float* lightSpecular, float* lightAmbient );
+    
+    void setShaderPrograms( std::string vertexShaderFileName = "sphere.vert",
+                  std::string fragmentShaderFileName = "sphere.frag" );
 
     void loadVariables();
+    
+    unsigned int getShaderId();
 
 private:
 

@@ -9,7 +9,7 @@
 #define SURFACE_H
 #include <vector>
 #include "GraphicsShader.h"
-#include "SphereShader.h"
+#include "TriangleShader.h"
 
 class Surface
 {
@@ -19,9 +19,9 @@ public:
      * Constroi uma esfera
      * @param shader
      */
-    Surface( SphereShader* shader );
+    Surface( TriangleShader* shader );
 
-    Surface( std::string fileName, SphereShader* shader );
+    Surface( std::string fileName, TriangleShader* shader );
 
     virtual ~Surface();
 
@@ -45,7 +45,7 @@ public:
     std::vector< unsigned int > _triangles;
 
     //Shader
-    SphereShader* _shader;
+    TriangleShader* _shader;
 
 
 
