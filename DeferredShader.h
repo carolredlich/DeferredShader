@@ -5,22 +5,22 @@
  * Created on 8 de Abril de 2016, 10:53
  */
 
-#ifndef SPHERESHADER_H
-#define SPHERESHADER_H
+#ifndef DEFERREDSHADER_H
+#define DEFERREDSHADER_H
 
 #include "GraphicsShader.h"
 #include <string>
 
-class TriangleShader :
+class DeferredShader :
     public GraphicsShader
 {
 public:
-    TriangleShader( std::string vertexShaderFileName = "sphere.vert",
+    DeferredShader( std::string vertexShaderFileName = "sphere.vert",
                   std::string fragmentShaderFileName = "sphere.frag" );
 
-    TriangleShader( const TriangleShader& orig );
+    DeferredShader( const DeferredShader& orig );
 
-    virtual ~TriangleShader();
+    virtual ~DeferredShader();
 
     void setMvpMatrix( double* mvp );
 

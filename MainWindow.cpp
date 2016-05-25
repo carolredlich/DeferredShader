@@ -21,8 +21,8 @@ MainWindow::MainWindow( )
 
 
     //Cria o shader
-    TriangleShader* shader = new TriangleShader( "sphere_1.vert", "sphere.geom", "sphere_1.frag" );
-//    TriangleShader* shader = new TriangleShader( "sphere.vert", "sphere.geom", "sphere.frag" );
+//    TriangleShader* shader = new TriangleShader( "sphere_1.vert", "sphere.geom", "sphere_1.frag" );
+    TriangleShader* shader = new TriangleShader( "sphere.vert", "sphere.frag" );
 
     //Cria uma superficie e insere na lista de superficies
 //    _surface.push_back( Surface( shader ) );
@@ -85,7 +85,7 @@ void MainWindow::createWindow( )
 
     //Incialia propriedades dos canvas.
     initializeCanvas( );
-
+    
 }
 
 MainWindow::~MainWindow( )
@@ -106,6 +106,7 @@ void MainWindow::hide( )
 void MainWindow::initializeCanvas( )
 {
     glClearColor( 0, 0, 0, 1.0 );
+    
     
 //    int numTex = 2;
 //
@@ -137,7 +138,7 @@ void MainWindow::initializeCanvas( )
 }
 
 void MainWindow::drawScene( )
-{
+{    
     glEnable( GL_DEPTH_TEST );
     //Limpa a janela.
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -147,10 +148,12 @@ void MainWindow::drawScene( )
 
 
     //Define parâmetros da luz
-    float lightPosition[ 4 ] = { 4, 4, 6, 1 };
+    float lightPosition[ 4 ] = { 20, 20, 20, 1 };
     float lightDifuse[ 4 ] = { 0.6, 0.6, 0.6, 1.0 };
     float lightSpecular[ 4 ] = { 1, 1, 1, 1.0 };
     float lightAmbient[ 4 ] = { 0.1, 0.1, 0.1, 1.0 };
+    
+
 
     //Descomentar caso queira ver os triangulos
     //    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -168,7 +171,8 @@ void MainWindow::drawScene( )
 //    double eye[3] = { 3, 0, 0 }; //1 bola
 //    double eye[3] = { 0, 3, 0.1 }; //1 bola
 //    double eye[3] = { -15, 2, 0 };
-    double eye[3] = { 15, 2, 7 };
+//    double eye[3] = { 15, 2, 7 };
+    double eye[3] = { 15, 15, 7 };
 //    double eye[3] = { 0, 0, 3 }; //1 bola
 //    double eye[3] = { 0, -3, 0.1 }; //1 bola
 
@@ -180,12 +184,22 @@ void MainWindow::drawScene( )
     for( unsigned int i = 0; i < numSpheres; i++ )
     {
         for( unsigned int j = 0; j < numSpheres; j++ )
-        {
+        {            
+            float materialAmbient[ 4 ] = { 0, 0, 0, 1.0 };
+            float materialDifuse[ 4 ] = { (float)(i+1)/numSpheres,(float)(j+1)/numSpheres, 1 , 1 };
+            float materialSpecular[ 4 ] = { 1, 1, 1, 30 };
+    
+              
+    
             //Se o shader não estiver alocado, compila
-            //if( !_surface[ 0 ]._shader->isAllocated( ) )
+            if( !_surface[ 0 ]._shader->isAllocated( ) )
             {
                 _surface[ 0 ]._shader->compileShader( );
             }
+            
+            //Passa informações do material pro shader 
+            _surface[0]._shader->setMaterial( materialDifuse, materialSpecular, materialAmbient );
+            
             //Passa a posicao da câmera pro shader
             _surface[ 0 ]._shader->setEye( eye );
 
@@ -242,41 +256,29 @@ void MainWindow::drawScene( )
             _surface[ 0 ]._shader->loadVariables( );
 
 
-            //Habilita o uso de textura 1D.
-            glEnable( GL_TEXTURE_2D );
-            //Cria um objeto de textura de indice 0
-            glActiveTexture( GL_TEXTURE0 );
-            //Faz com que o objeto de textura criado seja o corrente.
-            glBindTexture( GL_TEXTURE_2D, _textureId[ 0 ] );
-            //Cria um objeto de textura com indice 1s
-            glActiveTexture( GL_TEXTURE1 );
-            //Faz com que o objeto de textura criado seja o corrente.
-            glBindTexture( GL_TEXTURE_2D, _textureId[ 1 ] );
-
             //Desenha a superficie
             glDrawElements( GL_TRIANGLES, _surface[ 0 ]._triangles.size(), GL_UNSIGNED_INT, &_surface[ 0 ]._triangles[ 0 ] );
 
             _surface[ 0 ]._shader->unload();
 
-            //Desabilita o uso de textura.
-            glDisable( GL_TEXTURE_2D );
 
         }
     }
+
       // Render to the screen
             glBindFramebuffer( GL_FRAMEBUFFER, 0 );
             // Render on the whole framebuffer, complete from the lower left corner to the upper right
             glViewport( 0, 0, _width, _height );
-
             // Clear the screen
             glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-            _surface[0]._shader->setShaderPrograms( "Passthrough.vertexshader", "WobblyTexture.fragmentshader" );
+
+            _surface[0]._shader->setShaderPrograms( "deferredshader.vert", "deferredshader.frag" );
             _surface[ 0 ]._shader->compileShader( );
             _surface[ 0 ]._shader->load( );
             _surface[ 0 ]._shader->loadVariables( );
             
             // Bind our texture in Texture Unit 2
-            glActiveTexture( GL_TEXTURE2 );
+            glActiveTexture( GL_TEXTURE0 );
             glBindTexture( GL_TEXTURE_2D, _deferredFBO );
 
 
@@ -295,6 +297,8 @@ void MainWindow::drawScene( )
 
 void MainWindow::resizeCanvas( int width, int height )
 {
+    
+    
     _width = width;
     _height = height;
     //Define o viewport.
@@ -310,8 +314,10 @@ void MainWindow::resizeCanvas( int width, int height )
     }
     double fAspect = ( double ) width / height;
     _projectionMatrix.perspective( angle, fAspect, 0.5, 500 );
+    
+    
+    initDeferredShader( );  
 
-    initDeferredShader( );
 }
 
 int MainWindow::exitButtonCallback( Ihandle* button )
@@ -346,7 +352,7 @@ int MainWindow::resizeCanvasCallback( Ihandle* canvas, int width, int height )
 
     //Redesenha a janela.
     window->resizeCanvas( width, height );
-
+    
     //Marca o canvas para ser redesenhado.
     IupUpdate( canvas );
 
@@ -371,10 +377,11 @@ void MainWindow::createGBufferTex( GLenum texUnit, GLenum format, GLuint &texId 
     glGenTextures( 1, &texId );
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexStorage2D( GL_TEXTURE_2D, 1, format, _width, _height );
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, _width, _height, 0, GL_RGB, GL_FLOAT, 0);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-
+    
 }
 
 void MainWindow::initDeferredShader( )
@@ -392,9 +399,9 @@ void MainWindow::initDeferredShader( )
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _width, _height );
 
 
-    createGBufferTex( GL_TEXTURE0, GL_RGB32F, posTex );
-    createGBufferTex( GL_TEXTURE1, GL_RGB32F, normTex );
-    createGBufferTex( GL_TEXTURE2, GL_RGB8, colorTex );
+    createGBufferTex( GL_TEXTURE2, GL_RGB32F, posTex );
+    createGBufferTex( GL_TEXTURE3, GL_RGB32F, normTex );
+    createGBufferTex( GL_TEXTURE4, GL_RGB8, colorTex );
 
     // Attach the images to the framebuffer
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
@@ -417,7 +424,8 @@ void MainWindow::initDeferredShader( )
     }
 
     // The fullscreen quad's FBO
-    static const GLfloat g_quad_vertex_buffer_data[] = {
+    static const GLfloat g_quad_vertex_buffer_data[] = 
+    {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
         -1.0f, 1.0f, 0.0f,

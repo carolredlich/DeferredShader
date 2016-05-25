@@ -11,6 +11,7 @@
 
 
 #include "TriangleShader.h"
+#include "DeferredShader.h"
 #include "OpenGLMatrixManager.h"
 #include "Surface.h"
 

@@ -15,13 +15,12 @@
 #include "TriangleShader.h"
 
 TriangleShader::TriangleShader( std::string vertexShaderFileName,
-                            std::string geometryShaderFileName,
                             std::string fragmentShaderFileName )
 {
     std::string vertexShader = readFile( vertexShaderFileName.c_str() );
     std::string tesseletionControlShader = readFile( "triangle.tcs" );
     std::string tesseletionEvaluationShader = readFile( "triangle.tes" );
-    std::string geometryShader = readFile( geometryShaderFileName.c_str() );
+    std::string geometryShader = readFile( "triangle.geom" );
     std::string fragmentShader = readFile( fragmentShaderFileName.c_str() );
 
 
@@ -164,6 +163,16 @@ void TriangleShader::setLight( float* lightPosition, float* lightDifuse,
     memcpy( _lightAmbient, lightAmbient, 4 * sizeof ( float ) );
 }
 
+void TriangleShader::setMaterial( float* materialDifuse,
+                   float* materialSpecular, float* materialAmbient )
+{
+    memcpy( _materialDifuse, materialDifuse, 4 * sizeof ( float ) );
+    memcpy( _materialSpecular, materialSpecular, 4 * sizeof ( float ) );
+    memcpy( _materialAmbient, materialAmbient, 4 * sizeof ( float ) );
+}
+
+
+
 
 void TriangleShader::loadVariables()
 {
@@ -181,32 +190,31 @@ void TriangleShader::loadVariables()
     glVertexAttribPointer( parameterNormal, 3, GL_DOUBLE, GL_FALSE, 0, _normal );
     glEnableVertexAttribArray( parameterNormal );
 
-    unsigned int parameterTexCoord = glGetAttribLocation( _glShader, "texCoord_MS" );
-    glVertexAttribPointer( parameterTexCoord, 2, GL_DOUBLE, GL_FALSE, 0, _texCoords );
-    glEnableVertexAttribArray( parameterTexCoord );
-
     //Camera
     unsigned int parameterEye = glGetUniformLocation( _glShader, "eyePos_WS" );
     glUniform3f( parameterEye, _eye[ 0 ], _eye[ 1 ], _eye[ 2 ] );
 
-    //Textura
-
-    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "colorTextureSampler" );
-    glUniform1i( parameterTexture1, 0 );
-
-    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "normalTextureSampler" );
-    glUniform1i( parameterTexture2, 1 );
     
-    unsigned int parameterTexture3 = glGetUniformLocation( _glShader, "PositionTex" );
-    glUniform1i( parameterTexture3, 2 );
+    unsigned int parameterTexture0 = glGetUniformLocation( _glShader, "PositionTex" );
+    glUniform1i( parameterTexture0, 0 );
 
-//    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
-//    glUniform1i( parameterTexture1, 1 );
-//    
-//    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "ColorTex" );
-//    glUniform1i( parameterTexture2, 2 );
+    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
+    glUniform1i( parameterTexture1, 1);
     
+    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "ColorTex" );
+    glUniform1i( parameterTexture2, 2 );
     
+    //Material
+      unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
+    glUniform4f( parameterMaterialDifuse, _materialDifuse[ 0 ], _materialDifuse[ 1 ], _materialDifuse[ 2 ], _materialDifuse[ 3 ] );
+
+    unsigned int parameterMaterialAmbient = glGetUniformLocation( _glShader, "materialAmbient" );
+    glUniform4f( parameterMaterialAmbient, _materialAmbient[ 0 ], _materialAmbient[ 1 ], _materialAmbient[ 2 ],
+                 _materialAmbient[ 3 ] );
+
+    unsigned int parameterMaterialSpecular = glGetUniformLocation( _glShader, "materialSpecular" );
+    glUniform4f( parameterMaterialSpecular, _materialSpecular[ 0 ], _materialSpecular[ 1 ], _materialSpecular[ 2 ],
+                 _materialSpecular[ 3 ] );
 
     //LUZ
     unsigned int parameterLightPosition = glGetUniformLocation( _glShader, "lightPos_WS" );

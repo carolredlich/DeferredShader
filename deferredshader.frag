@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 
 in vec2 UV;
 
@@ -6,6 +6,7 @@ out vec3 color;
 
 uniform sampler2D PositionTex;
 
-void main(){
+void main()
+{
 	color = texture( PositionTex, UV ).xyz;
 }
