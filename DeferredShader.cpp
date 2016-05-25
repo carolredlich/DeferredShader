@@ -114,20 +114,10 @@ void DeferredShader::setVertices( double* vertices, int n )
     _nVertices = n;
 }
 
-void DeferredShader::setTexCoord( double* texCoord )
-{
-    _texCoords = texCoord;
-}
 
 void DeferredShader::setNormal( double* normal )
 {
     _normal = normal;
-}
-
-void DeferredShader::setTangentAndBitangent( double* tangent, double* bitangent )
-{
-    _tangent = tangent;
-    _bitangent = bitangent;
 }
 
 void DeferredShader::setEye( double* eye )
@@ -161,10 +151,21 @@ void DeferredShader::loadVariables( )
         return;
     }
 
-    unsigned int parameterVertex = glGetAttribLocation( _glShader, "vertex_MS" );
+
+
+//    glGenBuffers( 1, &_quad_vertexbuffer );
+//    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
+//    glBufferData( GL_ARRAY_BUFFER, sizeof (quadVertices ), quadVertices, GL_STATIC_DRAW );
+//    
+//    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
+//    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
+    
+    
+    unsigned int parameterVertex = glGetAttribLocation( _glShader, "vertex" );
     glBindBuffer( GL_ARRAY_BUFFER, parameterVertex );
     glVertexAttribPointer( parameterVertex, 3, GL_DOUBLE, GL_FALSE, 0, _vertex );
     glEnableVertexAttribArray( parameterVertex );
+    
     //
     //    unsigned int parameterNormal = glGetAttribLocation( _glShader, "normal_MS" );
     //    glVertexAttribPointer( parameterNormal, 3, GL_DOUBLE, GL_FALSE, 0, _normal );

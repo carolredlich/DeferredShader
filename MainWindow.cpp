@@ -10,22 +10,16 @@
 
 MainWindow::MainWindow( )
 {
-    _textureImg[ 0 ] = imgReadBMP( ( char* ) "bola.bmp" );
-    _textureImg[ 1 ] = imgReadBMP( ( char* ) "bolabumpNormal.bmp" );
-
-    //        _textureImg[0] = imgReadBMP( ( char* ) "bolafutebol.bmp" );
-    //        _textureImg[1] = imgReadBMP( ( char* ) "bolafutebolnormal.bmp" );
-
     //Cria janela e define suas configuracoes.
     createWindow( );
 
 
     //Cria o shader
-//    TriangleShader* shader = new TriangleShader( "sphere_1.vert", "sphere.geom", "sphere_1.frag" );
+    //    TriangleShader* shader = new TriangleShader( "sphere_1.vert", "sphere.geom", "sphere_1.frag" );
     TriangleShader* shader = new TriangleShader( "sphere.vert", "sphere.frag" );
 
     //Cria uma superficie e insere na lista de superficies
-//    _surface.push_back( Surface( shader ) );
+    //    _surface.push_back( Surface( shader ) );
     _surface.push_back( Surface( "esfera3.off", shader ) );
 }
 
@@ -51,7 +45,7 @@ void MainWindow::createWindow( )
     IupSetAttribute( exitButton, IUP_TIP, "Fecha a janela." );
 
     //Define os atributos do canvas.
-    IupSetAttribute( canvas, IUP_RASTERSIZE, "800x600" );
+    IupSetAttribute( canvas, IUP_RASTERSIZE, "1024x650" );
     IupSetAttribute( canvas, IUP_BUFFER, IUP_DOUBLE );
     IupSetAttribute( canvas, IUP_EXPAND, IUP_YES );
 
@@ -85,7 +79,7 @@ void MainWindow::createWindow( )
 
     //Incialia propriedades dos canvas.
     initializeCanvas( );
-    
+
 }
 
 MainWindow::~MainWindow( )
@@ -106,39 +100,11 @@ void MainWindow::hide( )
 void MainWindow::initializeCanvas( )
 {
     glClearColor( 0, 0, 0, 1.0 );
-    
-    
-//    int numTex = 2;
-//
-//    //Gera um objeto de textura.
-//    glGenTextures( numTex, _textureId );
-//
-//    for( unsigned int i = 0; i < numTex; i++ )
-//    {
-//        //Faz com que o objeto de textura criado seja o corrente.
-//        glBindTexture( GL_TEXTURE_2D, _textureId[ i ] );
-//
-//        //Aloca cores para a textura.
-//        GLfloat* textura = imgGetData( _textureImg[ i ] );
-//
-//        //Constroi textura e mipmap
-//        gluBuild2DMipmaps( GL_TEXTURE_2D, 3, imgGetWidth( _textureImg[ i ] ),
-//                           imgGetHeight( _textureImg[ i ] ), GL_RGB, GL_FLOAT, imgGetData( _textureImg[ i ] ) );
-//
-//        // Define os filtros de magnificacao e minificacao
-//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-//
-//        // Seleciona o modo de aplicacao da textura
-//        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE );
-//
-//        // Ajusta os parametros de repetição
-//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-//    }
 }
 
 void MainWindow::drawScene( )
-{    
+{
+    initDeferredShader( ); 
     glEnable( GL_DEPTH_TEST );
     //Limpa a janela.
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -152,11 +118,11 @@ void MainWindow::drawScene( )
     float lightDifuse[ 4 ] = { 0.6, 0.6, 0.6, 1.0 };
     float lightSpecular[ 4 ] = { 1, 1, 1, 1.0 };
     float lightAmbient[ 4 ] = { 0.1, 0.1, 0.1, 1.0 };
-    
+
 
 
     //Descomentar caso queira ver os triangulos
-    //    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+     //   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     //Carrega a identidade na model view
     _modelViewMatrix.loadIdentity( );
@@ -165,16 +131,14 @@ void MainWindow::drawScene( )
 
     //Define a posição da câmera
     //Descomentar o que quiser usar
-//    double eye[ 3 ] = { 2, 2, 3 };
-//    double eye[3] = { -500, -100, 200 };
-//    double eye[3] = { 0, 0, 3 }; //1 bola
-//    double eye[3] = { 3, 0, 0 }; //1 bola
-//    double eye[3] = { 0, 3, 0.1 }; //1 bola
-//    double eye[3] = { -15, 2, 0 };
-//    double eye[3] = { 15, 2, 7 };
-    double eye[3] = { 15, 15, 7 };
-//    double eye[3] = { 0, 0, 3 }; //1 bola
-//    double eye[3] = { 0, -3, 0.1 }; //1 bola
+    //    double eye[ 3 ] = { 2, 2, 3 };
+    //    double eye[3] = { -500, -100, 200 };
+    //    double eye[3] = { 0, 0, 3 }; //1 bola
+    //    double eye[3] = { 3, 0, 0 }; //1 bola
+    //    double eye[3] = { 0, 3, 0.1 }; //1 bola
+    //    double eye[3] = { -15, 2, 0 };
+    //    double eye[3] = { 15, 2, 7 };
+    double eye[3] = { 18, 18, 0 };
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
@@ -184,22 +148,20 @@ void MainWindow::drawScene( )
     for( unsigned int i = 0; i < numSpheres; i++ )
     {
         for( unsigned int j = 0; j < numSpheres; j++ )
-        {            
-            float materialAmbient[ 4 ] = { 0, 0, 0, 1.0 };
-            float materialDifuse[ 4 ] = { (float)(i+1)/numSpheres,(float)(j+1)/numSpheres, 1 , 1 };
+        {
+            float materialAmbient[ 4 ] = { 1, 1, 1, 1.0 };
+            float materialDifuse[ 4 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1, 1 };
             float materialSpecular[ 4 ] = { 1, 1, 1, 30 };
-    
-              
-    
+
             //Se o shader não estiver alocado, compila
             if( !_surface[ 0 ]._shader->isAllocated( ) )
             {
                 _surface[ 0 ]._shader->compileShader( );
             }
-            
+
             //Passa informações do material pro shader 
             _surface[0]._shader->setMaterial( materialDifuse, materialSpecular, materialAmbient );
-            
+
             //Passa a posicao da câmera pro shader
             _surface[ 0 ]._shader->setEye( eye );
 
@@ -211,13 +173,6 @@ void MainWindow::drawScene( )
 
             //Seta a normal dos vértices da superficie para o shader
             _surface[ 0 ]._shader->setNormal( &_surface[ 0 ]._normal[ 0 ] );
-
-            //Seta as coordenadas de textura dos vértices da superficie para o shader
-            _surface[ 0 ]._shader->setTexCoord( &_surface[ 0 ]._texCoord[ 0 ] );
-
-            //Seta as tangentes e bitangentes dos vértices da superficie para o shader
-            _surface[ 0 ]._shader->setTangentAndBitangent( &_surface[ 0 ]._tangent[ 0 ],
-                &_surface[ 0 ]._bitangent[ 0 ] );
 
             _surface[ 0 ]._shader->setVMatrix( _viewMatrix );
 
@@ -232,13 +187,9 @@ void MainWindow::drawScene( )
             }
 
             _viewMatrix.multMatrix( _modelMatrix );
-
             _projectionMatrix.multMatrix( _viewMatrix );
-
             _surface[ 0 ]._shader->setMvpMatrix( _projectionMatrix );
-
             _surface[ 0 ]._shader->setMvMatrix( _viewMatrix );
-
 
             //Pega a matriz que transforma a normal
             double normal[ 9 ];
@@ -246,7 +197,6 @@ void MainWindow::drawScene( )
             _surface[ 0 ]._shader->setNormalMatrix( normal );
 
             _viewMatrix.pop( );
-
             _surface[ 0 ]._shader->setMMatrix( _modelMatrix );
 
             _modelMatrix.pop( );
@@ -257,48 +207,61 @@ void MainWindow::drawScene( )
 
 
             //Desenha a superficie
-            glDrawElements( GL_TRIANGLES, _surface[ 0 ]._triangles.size(), GL_UNSIGNED_INT, &_surface[ 0 ]._triangles[ 0 ] );
+            glDrawElements( GL_TRIANGLES, _surface[ 0 ]._triangles.size( ), GL_UNSIGNED_INT, &_surface[ 0 ]._triangles[ 0 ] );
 
-            _surface[ 0 ]._shader->unload();
+            _surface[ 0 ]._shader->unload( );
 
 
         }
     }
 
-      // Render to the screen
-            glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-            // Render on the whole framebuffer, complete from the lower left corner to the upper right
-            glViewport( 0, 0, _width, _height );
-            // Clear the screen
-            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    
+    // Render to the screen
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    // Render on the whole framebuffer, complete from the lower left corner to the upper right
+    glViewport( 0, 0, _width, _height );
+    // Clear the screen
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    
+    // The fullscreen quad's FBO
+    static double quadVertices[] ={
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+    
+    static unsigned int triangles[] ={
+        0, 1, 2,
+        2, 1, 3
+    };
+    
+    // Bind our texture in Texture Unit 0
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, _deferredFBO );
 
-            _surface[0]._shader->setShaderPrograms( "deferredshader.vert", "deferredshader.frag" );
-            _surface[ 0 ]._shader->compileShader( );
-            _surface[ 0 ]._shader->load( );
-            _surface[ 0 ]._shader->loadVariables( );
-            
-            // Bind our texture in Texture Unit 2
-            glActiveTexture( GL_TEXTURE0 );
-            glBindTexture( GL_TEXTURE_2D, _deferredFBO );
+    glEnableVertexAttribArray( 0 );
+    DeferredShader* deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
+    if( !deferredShader->isAllocated() )
+    {
+        deferredShader->compileShader();
+    }
+    deferredShader->setVertices(quadVertices, 4 );
+    deferredShader->load();
+    deferredShader->loadVariables();
+    
+    // Draw the triangles !s
+    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, triangles );
+    
+    glDisableVertexAttribArray( 0 );
 
-
-            // 1rst attribute buffer : vertices
-            glEnableVertexAttribArray( 0 );
-            glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
-            glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
-
-            // Draw the triangles !
-            glDrawArrays( GL_TRIANGLES, 0, 6 ); // 2*3 indices starting at 0 -> 2 triangles
-
-            glDisableVertexAttribArray( 0 );
-            
-            _surface[ 0 ]._shader->unload( );
+    deferredShader->unload();
 }
 
 void MainWindow::resizeCanvas( int width, int height )
 {
-    
-    
+
+
     _width = width;
     _height = height;
     //Define o viewport.
@@ -314,9 +277,6 @@ void MainWindow::resizeCanvas( int width, int height )
     }
     double fAspect = ( double ) width / height;
     _projectionMatrix.perspective( angle, fAspect, 0.5, 500 );
-    
-    
-    initDeferredShader( );  
 
 }
 
@@ -352,7 +312,7 @@ int MainWindow::resizeCanvasCallback( Ihandle* canvas, int width, int height )
 
     //Redesenha a janela.
     window->resizeCanvas( width, height );
-    
+
     //Marca o canvas para ser redesenhado.
     IupUpdate( canvas );
 
@@ -381,12 +341,11 @@ void MainWindow::createGBufferTex( GLenum texUnit, GLenum format, GLuint &texId 
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    
+
 }
 
 void MainWindow::initDeferredShader( )
 {
-
     GLuint depthBuf, posTex, normTex, colorTex;
 
     //Cria e binda o fbo
@@ -423,18 +382,5 @@ void MainWindow::initDeferredShader( )
         return;
     }
 
-    // The fullscreen quad's FBO
-    static const GLfloat g_quad_vertex_buffer_data[] = 
-    {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-    };
-
-    glGenBuffers( 1, &_quad_vertexbuffer );
-    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof (g_quad_vertex_buffer_data ), g_quad_vertex_buffer_data, GL_STATIC_DRAW );
+  
 }

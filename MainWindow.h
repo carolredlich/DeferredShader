@@ -1,12 +1,5 @@
-/*
- * File:   IupGLCanvasDummy.h
- * Author: jeferson
- *
- * Created on August 31, 2014, 9:28 AM
- */
-
-#ifndef IUPGLCANVASDUMMY_H
-#define IUPGLCANVASDUMMY_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 
 
@@ -71,10 +64,6 @@ private:
 
     //Superficies a serem desenhadas
     std::vector< Surface > _surface;
-
-    //Texturas
-    Image* _textureImg[ 2 ];
-    GLuint _textureId[ 2 ];
 
     GLuint _deferredFBO;
     GLuint _quad_vertexbuffer;

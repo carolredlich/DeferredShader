@@ -34,11 +34,7 @@ public:
 
     void setVertices( double* vertices, int n );
 
-    void setTexCoord( double* texCoord );
-
     void setNormal( double* normal );
-
-    void setTangentAndBitangent( double* tangent, double* bitangent );
 
     void setEye( double* eye );
 
@@ -72,12 +68,7 @@ private:
 
     double* _vertex;
     int _nVertices;
-
-    double* _texCoords;
     double* _normal;
-    double* _tangent;
-    double* _bitangent;
-
 
     float _eye[ 3 ];
 

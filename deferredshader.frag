@@ -8,5 +8,5 @@ uniform sampler2D PositionTex;
 
 void main()
 {
-	color = texture( PositionTex, UV ).xyz;
+	color = texture( PositionTex, UV ).xyz;// + vec3( 0, 0, 0.5);
 }

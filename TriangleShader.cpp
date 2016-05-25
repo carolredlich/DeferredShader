@@ -127,22 +127,9 @@ void TriangleShader::setVertices( double* vertices, int n )
 }
 
 
-void TriangleShader::setTexCoord( double* texCoord )
-{
-    _texCoords = texCoord;
-}
-
-
 void TriangleShader::setNormal( double* normal )
 {
     _normal = normal;
-}
-
-
-void TriangleShader::setTangentAndBitangent( double* tangent, double* bitangent )
-{
-    _tangent = tangent;
-    _bitangent = bitangent;
 }
 
 
