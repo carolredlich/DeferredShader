@@ -247,6 +247,8 @@ void MainWindow::drawScene( )
         deferredShader->compileShader( );
     }
     deferredShader->setVertices( quadVertices, 4 );
+    deferredShader->setLight( lightPosition, lightDifuse, lightSpecular, lightAmbient );
+    deferredShader->setEye( eye );
     deferredShader->load( );
     deferredShader->loadVariables( );
 
@@ -360,23 +362,23 @@ void MainWindow::initDeferredShader( )
     createGBufferTex( GL_TEXTURE0, GL_RGB32F, posTex );
     createGBufferTex( GL_TEXTURE1, GL_RGB32F, normTex );
     createGBufferTex( GL_TEXTURE2, GL_RGB32F, difTex );
-    //    createGBufferTex( GL_TEXTURE3, GL_RGB8, ambTex );
-    //    createGBufferTex( GL_TEXTURE4, GL_RGB8, specTex );
+    createGBufferTex( GL_TEXTURE3, GL_RGB32F, ambTex );
+    createGBufferTex( GL_TEXTURE4, GL_RGB32F, specTex );
 
     // Attach the images to the framebuffer
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex, 0 );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex, 0 );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, difTex, 0 );
-    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, ambTex, 0 );
-    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, specTex, 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, ambTex, 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, specTex, 0 );
 
-    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    //, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+                                GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 
-    glDrawBuffers( 3, drawBuffers );
- glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
-glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glDrawBuffers( 5, drawBuffers );
+    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ); // Set everything to zero.
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
     {
         return;

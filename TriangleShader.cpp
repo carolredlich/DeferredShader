@@ -176,23 +176,23 @@ void TriangleShader::loadVariables()
     unsigned int parameterNormal = glGetAttribLocation( _glShader, "normal_MS" );
     glVertexAttribPointer( parameterNormal, 3, GL_DOUBLE, GL_FALSE, 0, _normal );
     glEnableVertexAttribArray( parameterNormal );
+//
+//    //Camera
+//    unsigned int parameterEye = glGetUniformLocation( _glShader, "eyePos_WS" );
+//    glUniform3f( parameterEye, _eye[ 0 ], _eye[ 1 ], _eye[ 2 ] );
 
-    //Camera
-    unsigned int parameterEye = glGetUniformLocation( _glShader, "eyePos_WS" );
-    glUniform3f( parameterEye, _eye[ 0 ], _eye[ 1 ], _eye[ 2 ] );
-
-    
-    unsigned int parameterTexture0 = glGetUniformLocation( _glShader, "PositionTex" );
-    glUniform1i( parameterTexture0, 0 );
-
-    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
-    glUniform1i( parameterTexture1, 1);
-    
-    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "ColorTex" );
-    glUniform1i( parameterTexture2, 2 );
+//    
+//    unsigned int parameterTexture0 = glGetUniformLocation( _glShader, "PositionTex" );
+//    glUniform1i( parameterTexture0, 0 );
+//
+//    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
+//    glUniform1i( parameterTexture1, 1);
+//    
+//    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "ColorTex" );
+//    glUniform1i( parameterTexture2, 2 );
     
     //Material
-      unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
+    unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
     glUniform4f( parameterMaterialDifuse, _materialDifuse[ 0 ], _materialDifuse[ 1 ], _materialDifuse[ 2 ], _materialDifuse[ 3 ] );
 
     unsigned int parameterMaterialAmbient = glGetUniformLocation( _glShader, "materialAmbient" );
@@ -203,34 +203,34 @@ void TriangleShader::loadVariables()
     glUniform4f( parameterMaterialSpecular, _materialSpecular[ 0 ], _materialSpecular[ 1 ], _materialSpecular[ 2 ],
                  _materialSpecular[ 3 ] );
 
-    //LUZ
-    unsigned int parameterLightPosition = glGetUniformLocation( _glShader, "lightPos_WS" );
-    glUniform3f( parameterLightPosition, _lightPosition[ 0 ], _lightPosition[ 1 ], _lightPosition[ 2 ] );
-
-    unsigned int parameterLightDifuse = glGetUniformLocation( _glShader, "lightDifuse" );
-    glUniform4f( parameterLightDifuse, _lightDifuse[ 0 ], _lightDifuse[ 1 ], _lightDifuse[ 2 ], _lightDifuse[ 3 ] );
-
-    unsigned int parameterLightAmbient = glGetUniformLocation( _glShader, "lightAmbient" );
-    glUniform4f( parameterLightAmbient, _lightAmbient[ 0 ], _lightAmbient[ 1 ], _lightAmbient[ 2 ],
-                 _lightAmbient[ 3 ] );
-
-    unsigned int parameterLightSpecular = glGetUniformLocation( _glShader, "lightSpecular" );
-    glUniform4f( parameterLightSpecular, _lightSpecular[ 0 ], _lightSpecular[ 1 ], _lightSpecular[ 2 ],
-                 _lightSpecular[ 3 ] );
+//    //LUZ
+//    unsigned int parameterLightPosition = glGetUniformLocation( _glShader, "lightPos_WS" );
+//    glUniform3f( parameterLightPosition, _lightPosition[ 0 ], _lightPosition[ 1 ], _lightPosition[ 2 ] );
+//
+//    unsigned int parameterLightDifuse = glGetUniformLocation( _glShader, "lightDifuse" );
+//    glUniform4f( parameterLightDifuse, _lightDifuse[ 0 ], _lightDifuse[ 1 ], _lightDifuse[ 2 ], _lightDifuse[ 3 ] );
+//
+//    unsigned int parameterLightAmbient = glGetUniformLocation( _glShader, "lightAmbient" );
+//    glUniform4f( parameterLightAmbient, _lightAmbient[ 0 ], _lightAmbient[ 1 ], _lightAmbient[ 2 ],
+//                 _lightAmbient[ 3 ] );
+//
+//    unsigned int parameterLightSpecular = glGetUniformLocation( _glShader, "lightSpecular" );
+//    glUniform4f( parameterLightSpecular, _lightSpecular[ 0 ], _lightSpecular[ 1 ], _lightSpecular[ 2 ],
+//                 _lightSpecular[ 3 ] );
 
 
     //Matrizes
     unsigned int parameterMvp = glGetUniformLocation( _glShader, "mvp" );
     glUniformMatrix4fv( parameterMvp, 1, GL_FALSE, _mvpMatrix );
-
-    unsigned int parameterMv = glGetUniformLocation( _glShader, "mv" );
-    glUniformMatrix4fv( parameterMv, 1, GL_FALSE, _mvMatrix );
-
+//
+//    unsigned int parameterMv = glGetUniformLocation( _glShader, "mv" );
+//    glUniformMatrix4fv( parameterMv, 1, GL_FALSE, _mvMatrix );
+//
     unsigned int parameterM = glGetUniformLocation( _glShader, "m" );
     glUniformMatrix4fv( parameterM, 1, GL_FALSE, _mMatrix );
 
-    unsigned int parameterV = glGetUniformLocation( _glShader, "v" );
-    glUniformMatrix4fv( parameterV, 1, GL_FALSE, _vMatrix );
+//    unsigned int parameterV = glGetUniformLocation( _glShader, "v" );
+//    glUniformMatrix4fv( parameterV, 1, GL_FALSE, _vMatrix );
 
     unsigned int parameterNM = glGetUniformLocation( _glShader, "normalMatrix" );
     glUniformMatrix3fv( parameterNM, 1, GL_FALSE, _normalMatrix );
