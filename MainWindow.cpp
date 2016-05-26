@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 
 #include <cstdlib>
+#include <time.h>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -10,17 +11,20 @@
 
 MainWindow::MainWindow( )
 {
+    _textureImg[ 0 ] = imgReadBMP( ( char* ) "bola.bmp" );
+    _textureImg[ 1 ] = imgReadBMP( ( char* ) "bolabumpNormal.bmp" );
+
     //Cria janela e define suas configuracoes.
     createWindow( );
 
+    srand( time( NULL ) );
 
     //Cria o shader
-    //    TriangleShader* shader = new TriangleShader( "sphere_1.vert", "sphere.geom", "sphere_1.frag" );
     TriangleShader* shader = new TriangleShader( "sphere.vert", "sphere.frag" );
 
     //Cria uma superficie e insere na lista de superficies
-    //    _surface.push_back( Surface( shader ) );
-    _surface.push_back( Surface( "esfera3.off", shader ) );
+    _surface.push_back( Surface( shader ) );
+    //    _surface.push_back( Surface( "esfera3.off", shader ) );
 }
 
 void MainWindow::createWindow( )
@@ -100,6 +104,7 @@ void MainWindow::hide( )
 void MainWindow::initializeCanvas( )
 {
     glClearColor( 0, 0, 0, 1.0 );
+    initBumpMapTexture( );
 }
 
 void MainWindow::drawScene( )
@@ -113,8 +118,8 @@ void MainWindow::drawScene( )
     glViewport( 0, 0, _width, _height );
 
 
-    //Define parâmetros da luz
     float lightPosition[ ] = { 20, 20, 20 };
+    //float lightDifuse[ ] = { rand() % 3, rand() % 3, rand() % 3 };
     float lightDifuse[ ] = { 0.6, 0.6, 0.6 };
     float lightSpecular[ ] = { 1, 1, 1 };
     float lightAmbient[ ] = { 0.1, 0.1, 0.1 };
@@ -137,8 +142,9 @@ void MainWindow::drawScene( )
     //    double eye[3] = { 3, 0, 0 }; //1 bola
     //    double eye[3] = { 0, 3, 0.1 }; //1 bola
     //    double eye[3] = { -15, 2, 0 };
-    //    double eye[3] = { 15, 2, 7 };
-    double eye[3] = { 15, 15, 15 };
+        double eye[3] = { 15, 2, 7 };
+//    double eye[3] = { 15, 15, 0 };
+//    double eye[3] = { 15, 2, 15 };
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
@@ -149,8 +155,9 @@ void MainWindow::drawScene( )
     {
         for( unsigned int j = 0; j < numSpheres; j++ )
         {
-            float materialAmbient[ 3 ] = { 1, 1, 1};
-            float materialDifuse[ 3 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1 };
+            float materialAmbient[ 3 ] = { 1, 1, 1 };
+            //            float materialDifuse[ 3 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1 };
+            float materialDifuse[ 3 ] = { 1, 1, 1 };
             float materialSpecular[ 3 ] = { 1, 1, 1 };
 
             //Se o shader não estiver alocado, compila
@@ -167,6 +174,13 @@ void MainWindow::drawScene( )
 
             //Seta a normal dos vértices da superficie para o shader
             _surface[ 0 ]._shader->setNormal( &_surface[ 0 ]._normal[ 0 ] );
+            //Seta as coordenadas de textura dos vértices da superficie para o shader
+            _surface[ 0 ]._shader->setTexCoord( &_surface[ 0 ]._texCoord[ 0 ] );
+
+            //Seta as tangentes e bitangentes dos vértices da superficie para o shader
+            _surface[ 0 ]._shader->setTangentAndBitangent( &_surface[ 0 ]._tangent[ 0 ],
+                &_surface[ 0 ]._bitangent[ 0 ] );
+
 
             _projectionMatrix.push( );
             _modelMatrix.push( );
@@ -191,11 +205,17 @@ void MainWindow::drawScene( )
             _surface[ 0 ]._shader->load( );
             _surface[ 0 ]._shader->loadVariables( );
 
+            //Habilita o uso de textura 1D.
+            glEnable( GL_TEXTURE_2D );
+            bindBumpMapTextures( );
 
             //Desenha a superficie
             glDrawElements( GL_TRIANGLES, _surface[ 0 ]._triangles.size( ), GL_UNSIGNED_INT, &_surface[ 0 ]._triangles[ 0 ] );
 
             _surface[ 0 ]._shader->unload( );
+
+            //Desabilita o uso de textura.
+            glDisable( GL_TEXTURE_2D );
 
 
         }
@@ -222,9 +242,9 @@ void MainWindow::drawScene( )
         2, 1, 3
     };
 
-    // Bind our texture in Texture Unit 0
-    //glActiveTexture( GL_TEXTURE0 );
-    //glBindTexture( GL_TEXTURE_2D, _deferredFBO );
+    //    // Bind our texture in Texture Unit 0
+    //    glActiveTexture( GL_TEXTURE0 );
+    //    glBindTexture( GL_TEXTURE_2D, _deferredFBO );
 
     glEnableVertexAttribArray( 0 );
     DeferredShader* deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
@@ -238,12 +258,21 @@ void MainWindow::drawScene( )
     deferredShader->load( );
     deferredShader->loadVariables( );
 
+
+    //Habilita o uso de textura 1D.
+    glEnable( GL_TEXTURE_2D );
+    bindDeferredShaderTextures( );
+
+
     // Draw the triangles !s
     glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, triangles );
 
     glDisableVertexAttribArray( 0 );
 
     deferredShader->unload( );
+
+    glDisable( GL_TEXTURE_2D );
+
 }
 
 void MainWindow::resizeCanvas( int width, int height )
@@ -334,7 +363,7 @@ void MainWindow::createGBufferTex( GLenum texUnit, GLenum format, GLuint &texId 
 
 void MainWindow::initDeferredShader( )
 {
-    GLuint depthBuf, posTex, normTex, difTex, ambTex, specTex;
+    GLuint depthBuf; //, posTex, normTex, difTex, ambTex, specTex;
     //Cria e binda o fbo
     glGenFramebuffers( 1, &_deferredFBO );
     glBindFramebuffer( GL_FRAMEBUFFER, _deferredFBO );
@@ -345,22 +374,22 @@ void MainWindow::initDeferredShader( )
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _width, _height );
 
 
-    createGBufferTex( GL_TEXTURE0, GL_RGB32F, posTex );
-    createGBufferTex( GL_TEXTURE1, GL_RGB32F, normTex );
-    createGBufferTex( GL_TEXTURE2, GL_RGB32F, difTex );
-    createGBufferTex( GL_TEXTURE3, GL_RGB32F, ambTex );
-    createGBufferTex( GL_TEXTURE4, GL_RGB32F, specTex );
+    createGBufferTex( GL_TEXTURE0, GL_RGB32F, _dsTextureId[0] );
+    createGBufferTex( GL_TEXTURE1, GL_RGB32F, _dsTextureId[1] );
+    createGBufferTex( GL_TEXTURE2, GL_RGB32F, _dsTextureId[2] );
+    createGBufferTex( GL_TEXTURE3, GL_RGB32F, _dsTextureId[3] );
+    createGBufferTex( GL_TEXTURE4, GL_RGB32F, _dsTextureId[4] );
 
     // Attach the images to the framebuffer
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, difTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, ambTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, specTex, 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _dsTextureId[0], 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _dsTextureId[1], 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, _dsTextureId[2], 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, _dsTextureId[3], 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, _dsTextureId[4], 0 );
 
     GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-                                GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+        GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 
     glDrawBuffers( 5, drawBuffers );
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ); // Set everything to zero.
@@ -370,5 +399,67 @@ void MainWindow::initDeferredShader( )
         return;
     }
 
+}
 
+void MainWindow::initBumpMapTexture( )
+{
+    int numTex = 2;
+
+    //Gera um objeto de textura.
+    glGenTextures( numTex, _textureId );
+
+    for( unsigned int i = 0; i < numTex; i++ )
+    {
+        //Faz com que o objeto de textura criado seja o corrente.
+        glBindTexture( GL_TEXTURE_2D, _textureId[ i ] );
+
+        //Aloca cores para a textura.
+        GLfloat* textura = imgGetData( _textureImg[ i ] );
+
+        //Constroi textura e mipmap
+        gluBuild2DMipmaps( GL_TEXTURE_2D, 3, imgGetWidth( _textureImg[ i ] ),
+            imgGetHeight( _textureImg[ i ] ), GL_RGB, GL_FLOAT, imgGetData( _textureImg[ i ] ) );
+
+        // Define os filtros de magnificacao e minificacao
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+
+        // Seleciona o modo de aplicacao da textura
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE );
+        //        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
+
+        // Ajusta os parametros de repetição
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    }
+}
+
+void MainWindow::bindBumpMapTextures( )
+{
+    //Cria um objeto de textura de indice 0
+    glActiveTexture( GL_TEXTURE0 );
+    //Faz com que o objeto de textura criado seja o corrente.
+    glBindTexture( GL_TEXTURE_2D, _textureId[ 0 ] );
+    //Cria um objeto de textura com indice 1s
+    glActiveTexture( GL_TEXTURE1 );
+    //Faz com que o objeto de textura criado seja o corrente.
+    glBindTexture( GL_TEXTURE_2D, _textureId[ 1 ] );
+}
+
+void MainWindow::bindDeferredShaderTextures( )
+{
+
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, _dsTextureId[0] );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( GL_TEXTURE_2D, _dsTextureId[1] );
+
+    glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, _dsTextureId[2] );
+
+    glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, _dsTextureId[3] );
+
+    glActiveTexture( GL_TEXTURE4 );
+    glBindTexture( GL_TEXTURE_2D, _dsTextureId[4] );
 }

@@ -33,6 +33,11 @@ public:
     void setMaterial( float* materialDifuse,
                    float* materialSpecular, float* materialAmbient );
     
+    
+    void setTexCoord( double* texCoord );
+
+    void setTangentAndBitangent( double* tangent, double* bitangent );
+    
     void loadVariables();
     
 private:
@@ -47,6 +52,12 @@ private:
     double* _vertex;
     int _nVertices;
     double* _normal;
+    
+    
+    double* _texCoords;
+    double* _tangent;
+    double* _bitangent;
+
 
     float _materialDifuse[ 3 ];
     float _materialSpecular[ 3 ];

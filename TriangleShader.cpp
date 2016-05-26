@@ -15,13 +15,13 @@
 #include "TriangleShader.h"
 
 TriangleShader::TriangleShader( std::string vertexShaderFileName,
-                            std::string fragmentShaderFileName )
+    std::string fragmentShaderFileName )
 {
-    std::string vertexShader = readFile( vertexShaderFileName.c_str() );
+    std::string vertexShader = readFile( vertexShaderFileName.c_str( ) );
     std::string tesseletionControlShader = readFile( "triangle.tcs" );
     std::string tesseletionEvaluationShader = readFile( "triangle.tes" );
     std::string geometryShader = readFile( "triangle.geom" );
-    std::string fragmentShader = readFile( fragmentShaderFileName.c_str() );
+    std::string fragmentShader = readFile( fragmentShaderFileName.c_str( ) );
 
 
     std::cout << "Vertex Shader" << std::endl;
@@ -36,41 +36,34 @@ TriangleShader::TriangleShader( std::string vertexShaderFileName,
     std::cout << fragmentShader << std::endl << std::endl << std::endl;
 
     //Define os programas.
-    if( vertexShader.size() > 0 )
+    if( vertexShader.size( ) > 0 )
     {
-        setVertexProgram( vertexShader.c_str(), vertexShader.size() );
+        setVertexProgram( vertexShader.c_str( ), vertexShader.size( ) );
     }
-    if( tesseletionControlShader.size() > 0 )
+    if( tesseletionControlShader.size( ) > 0 )
     {
-        setTesselationControlProgram( tesseletionControlShader.c_str(), tesseletionControlShader.size() );
+        setTesselationControlProgram( tesseletionControlShader.c_str( ), tesseletionControlShader.size( ) );
     }
-    if( tesseletionEvaluationShader.size() > 0 )
+    if( tesseletionEvaluationShader.size( ) > 0 )
     {
-        setTesselationEvaluationProgram( tesseletionEvaluationShader.c_str(), tesseletionEvaluationShader.size() );
+        setTesselationEvaluationProgram( tesseletionEvaluationShader.c_str( ), tesseletionEvaluationShader.size( ) );
     }
-    if( geometryShader.size() > 0 )
+    if( geometryShader.size( ) > 0 )
     {
-        setGeometryProgram( geometryShader.c_str(), geometryShader.size() );
+        setGeometryProgram( geometryShader.c_str( ), geometryShader.size( ) );
     }
-    if( fragmentShader.size() > 0 )
+    if( fragmentShader.size( ) > 0 )
     {
-        setFragmentProgram( fragmentShader.c_str(), fragmentShader.size() );
+        setFragmentProgram( fragmentShader.c_str( ), fragmentShader.size( ) );
     }
 
     //Define os atributos para o geomtry shader.
     setGeometryParameters( GL_TRIANGLES, GL_TRIANGLE_STRIP, 3 );
 }
 
+TriangleShader::TriangleShader( const TriangleShader& orig ) { }
 
-TriangleShader::TriangleShader( const TriangleShader& orig )
-{
-}
-
-
-TriangleShader::~TriangleShader()
-{
-}
-
+TriangleShader::~TriangleShader( ) { }
 
 void TriangleShader::setMvpMatrix( double* mvp )
 {
@@ -89,46 +82,71 @@ void TriangleShader::setMMatrix( double* m )
     }
 }
 
-
 void TriangleShader::setVertices( double* vertices, int n )
 {
     _vertex = vertices;
     _nVertices = n;
 }
 
-
 void TriangleShader::setNormal( double* normal )
 {
     _normal = normal;
 }
 
-
 void TriangleShader::setMaterial( float* materialDifuse,
-                   float* materialSpecular, float* materialAmbient )
+    float* materialSpecular, float* materialAmbient )
 {
     memcpy( _materialDifuse, materialDifuse, 3 * sizeof ( float ) );
     memcpy( _materialSpecular, materialSpecular, 3 * sizeof ( float ) );
     memcpy( _materialAmbient, materialAmbient, 3 * sizeof ( float ) );
 }
 
-
-
-
-void TriangleShader::loadVariables()
+void TriangleShader::setTexCoord( double* texCoord )
 {
-    if( !isAllocated() )
+    _texCoords = texCoord;
+}
+
+void TriangleShader::setTangentAndBitangent( double* tangent, double* bitangent )
+{
+    _tangent = tangent;
+    _bitangent = bitangent;
+}
+
+void TriangleShader::loadVariables( )
+{
+    if( !isAllocated( ) )
     {
         return;
     }
 
     unsigned int parameterVertex = glGetAttribLocation( _glShader, "vertex_MS" );
-    glBindBuffer(GL_ARRAY_BUFFER, parameterVertex);
+    glBindBuffer( GL_ARRAY_BUFFER, parameterVertex );
     glVertexAttribPointer( parameterVertex, 3, GL_DOUBLE, GL_FALSE, 0, _vertex );
     glEnableVertexAttribArray( parameterVertex );
 
     unsigned int parameterNormal = glGetAttribLocation( _glShader, "normal_MS" );
     glVertexAttribPointer( parameterNormal, 3, GL_DOUBLE, GL_FALSE, 0, _normal );
     glEnableVertexAttribArray( parameterNormal );
+
+    unsigned int parameterTexCoord = glGetAttribLocation( _glShader, "texCoord_MS" );
+    glVertexAttribPointer( parameterTexCoord, 2, GL_DOUBLE, GL_FALSE, 0, _texCoords );
+    glEnableVertexAttribArray( parameterTexCoord );
+
+    unsigned int parameterTangent = glGetAttribLocation( _glShader, "tangent_MS" );
+    glVertexAttribPointer( parameterTangent, 3, GL_DOUBLE, GL_FALSE, 0, _tangent );
+    glEnableVertexAttribArray( parameterTangent );
+
+    unsigned int parameterBitangent = glGetAttribLocation( _glShader, "bitangent_MS" );
+    glVertexAttribPointer( parameterBitangent, 3, GL_DOUBLE, GL_FALSE, 0, _bitangent );
+    glEnableVertexAttribArray( parameterBitangent );
+
+
+    //Textura
+    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "colorTextureSampler" );
+    glUniform1i( parameterTexture1, 0 );
+
+    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "normalTextureSampler" );
+    glUniform1i( parameterTexture2, 1 );
 
     //Material
     unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
@@ -143,18 +161,17 @@ void TriangleShader::loadVariables()
     //Matrizes
     unsigned int parameterMvp = glGetUniformLocation( _glShader, "mvp" );
     glUniformMatrix4fv( parameterMvp, 1, GL_FALSE, _mvpMatrix );
-////
+
     unsigned int parameterM = glGetUniformLocation( _glShader, "m" );
     glUniformMatrix4fv( parameterM, 1, GL_FALSE, _mMatrix );
 }
-
 
 std::string TriangleShader::readFile( const char* name )
 {
     std::ifstream in( name );
     std::string shader;
 
-    if( in.fail() )
+    if( in.fail( ) )
     {
         return "";
     }
@@ -168,4 +185,4 @@ std::string TriangleShader::readFile( const char* name )
     return shader;
 }
 
-    
+

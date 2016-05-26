@@ -68,6 +68,16 @@ private:
     GLuint _deferredFBO;
     GLuint _quad_vertexbuffer;
 
+    //Texturas
+    Image* _textureImg[ 2 ];
+    GLuint _textureId[ 2 ];
+
+
+    GLuint _dsTextureId[ 5 ];
+
+
+
+
 private:
 
     /**
@@ -95,6 +105,9 @@ private:
     void createGBufferTex(GLenum texUnit, GLenum format, GLuint &texId);
 
     void initDeferredShader();
+    void initBumpMapTexture();
+    void bindBumpMapTextures();
+    void bindDeferredShaderTextures();
 
 
 private:
