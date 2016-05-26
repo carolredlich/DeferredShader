@@ -121,10 +121,12 @@ void MainWindow::drawScene( )
     std::vector < float > lightDifuse;
     std::vector < float > lightSpecular;
     std::vector < float > lightAmbient;
-    int nLight = 1;
+    unsigned int nLight = 2;
 
     float lPos[] = { 20, 20, 20 };
     lightPosition.insert( lightPosition.end( ), lPos, lPos + 3 );
+    float lPos2[] = { 20, 20, 0 };
+    lightPosition.insert( lightPosition.end( ), lPos2, lPos2 + 3 );
     for( unsigned int i = 0; i < nLight; i++ )
     {
         float dif[] = { 0.6, 0.6, 0.6 };
@@ -263,7 +265,7 @@ void MainWindow::drawScene( )
         deferredShader->compileShader( );
     }
     deferredShader->setVertices( quadVertices, 4 );
-    deferredShader->setLight( &lightPosition[0], &lightDifuse[0], &lightSpecular[0], &lightAmbient[0] );
+    deferredShader->setLight( &lightPosition[0], &lightDifuse[0], &lightSpecular[0], &lightAmbient[0], nLight );
     deferredShader->setEye( eye );
     deferredShader->load( );
     deferredShader->loadVariables( );

@@ -19,7 +19,7 @@ void main( void )
 
     vertex_WS = (m * vec4( vertex_MS, 1 )).xyz ;
     
-        texCoordFrag_MS = texCoord_MS;
+    texCoordFrag_MS = texCoord_MS;
 
 
     gl_Position = mvp * vec4( vertex_MS, 1.0f );

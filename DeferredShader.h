@@ -28,7 +28,8 @@ public:
     void setEye( double* eye );
 
     void setLight( float* lightPosition, float* lightDifuse,
-                   float* lightSpecular, float* lightAmbient );
+                   float* lightSpecular, float* lightAmbient,
+                    unsigned int nLight);
     
    
     void loadVariables();
@@ -43,10 +44,11 @@ private:
 
     float _eye[ 3 ];
 
-    float _lightPosition[ 3 ];
-    float _lightDifuse[ 3 ];
-    float _lightSpecular[ 3 ];
-    float _lightAmbient[ 3 ];
+    float *_lightPosition;
+    float *_lightDifuse;
+    float *_lightSpecular;
+    float *_lightAmbient;
+    unsigned int _nLight;
 
 };
 

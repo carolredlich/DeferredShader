@@ -79,12 +79,18 @@ void DeferredShader::setEye( double* eye )
 }
 
 void DeferredShader::setLight( float* lightPosition, float* lightDifuse,
-    float* lightSpecular, float* lightAmbient )
+    float* lightSpecular, float* lightAmbient, unsigned int nLight )
 {
-    memcpy( _lightPosition, lightPosition, 3 * sizeof ( float ) );
-    memcpy( _lightDifuse, lightDifuse, 3 * sizeof ( float ) );
-    memcpy( _lightSpecular, lightSpecular, 3 * sizeof ( float ) );
-    memcpy( _lightAmbient, lightAmbient, 3 * sizeof ( float ) );
+//    memcpy( _lightPosition, lightPosition, nLight * sizeof ( float ) );
+//    memcpy( _lightDifuse, lightDifuse, nLight * sizeof ( float ) );
+//    memcpy( _lightSpecular, lightSpecular, nLight * sizeof ( float ) );
+//    memcpy( _lightAmbient, lightAmbient, nLight * sizeof ( float ) );
+    
+    _lightPosition = lightPosition;
+    _lightDifuse = lightDifuse;
+    _lightSpecular = lightSpecular;
+    _lightAmbient = lightAmbient;
+    _nLight = nLight;
 }
 
 
@@ -121,16 +127,19 @@ void DeferredShader::loadVariables( )
 
     //LUZ
     unsigned int parameterLightPosition = glGetUniformLocation( _glShader, "lightPos_WS" );
-    glUniform3f( parameterLightPosition, _lightPosition[ 0 ], _lightPosition[ 1 ], _lightPosition[ 2 ] );
+    glUniform3fv( parameterLightPosition, _nLight, _lightPosition );
 
     unsigned int parameterLightDifuse = glGetUniformLocation( _glShader, "lightDifuse" );
-    glUniform3f( parameterLightDifuse, _lightDifuse[ 0 ], _lightDifuse[ 1 ], _lightDifuse[ 2 ] );
+    glUniform3fv( parameterLightDifuse, _nLight, _lightDifuse );
 
     unsigned int parameterLightAmbient = glGetUniformLocation( _glShader, "lightAmbient" );
-    glUniform3f( parameterLightAmbient, _lightAmbient[ 0 ], _lightAmbient[ 1 ], _lightAmbient[ 2 ] );
+    glUniform3fv( parameterLightAmbient, _nLight, _lightAmbient );
 
     unsigned int parameterLightSpecular = glGetUniformLocation( _glShader, "lightSpecular" );
-    glUniform3f( parameterLightSpecular, _lightSpecular[ 0 ], _lightSpecular[ 1 ], _lightSpecular[ 2 ]);
+    glUniform3fv( parameterLightSpecular, _nLight, _lightSpecular);
+
+    unsigned int parameterNLight = glGetUniformLocation( _glShader, "nLight" );
+    glUniform1i( parameterNLight, _nLight );
 }
 
 std::string DeferredShader::readFile( const char* name )
