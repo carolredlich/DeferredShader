@@ -114,10 +114,10 @@ void MainWindow::drawScene( )
 
 
     //Define parâmetros da luz
-    float lightPosition[ 4 ] = { 20, 20, 20, 1 };
-    float lightDifuse[ 4 ] = { 0.6, 0.6, 0.6, 1.0 };
-    float lightSpecular[ 4 ] = { 1, 1, 1, 1.0 };
-    float lightAmbient[ 4 ] = { 0.1, 0.1, 0.1, 1.0 };
+    float lightPosition[ ] = { 20, 20, 20 };
+    float lightDifuse[ ] = { 0.6, 0.6, 0.6 };
+    float lightSpecular[ ] = { 1, 1, 1 };
+    float lightAmbient[ ] = { 0.1, 0.1, 0.1 };
 
 
 
@@ -138,7 +138,7 @@ void MainWindow::drawScene( )
     //    double eye[3] = { 0, 3, 0.1 }; //1 bola
     //    double eye[3] = { -15, 2, 0 };
     //    double eye[3] = { 15, 2, 7 };
-    double eye[3] = { 10, 10, 10 };
+    double eye[3] = { 15, 15, 15 };
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
@@ -149,9 +149,9 @@ void MainWindow::drawScene( )
     {
         for( unsigned int j = 0; j < numSpheres; j++ )
         {
-            float materialAmbient[ 4 ] = { 1, 1, 1, 1.0 };
-            float materialDifuse[ 4 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1, 1 };
-            float materialSpecular[ 4 ] = { 1, 1, 1, 1 };
+            float materialAmbient[ 3 ] = { 1, 1, 1};
+            float materialDifuse[ 3 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1 };
+            float materialSpecular[ 3 ] = { 1, 1, 1 };
 
             //Se o shader não estiver alocado, compila
             if( !_surface[ 0 ]._shader->isAllocated( ) )

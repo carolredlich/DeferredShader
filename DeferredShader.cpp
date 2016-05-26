@@ -81,10 +81,10 @@ void DeferredShader::setEye( double* eye )
 void DeferredShader::setLight( float* lightPosition, float* lightDifuse,
     float* lightSpecular, float* lightAmbient )
 {
-    memcpy( _lightPosition, lightPosition, 4 * sizeof ( float ) );
-    memcpy( _lightDifuse, lightDifuse, 4 * sizeof ( float ) );
-    memcpy( _lightSpecular, lightSpecular, 4 * sizeof ( float ) );
-    memcpy( _lightAmbient, lightAmbient, 4 * sizeof ( float ) );
+    memcpy( _lightPosition, lightPosition, 3 * sizeof ( float ) );
+    memcpy( _lightDifuse, lightDifuse, 3 * sizeof ( float ) );
+    memcpy( _lightSpecular, lightSpecular, 3 * sizeof ( float ) );
+    memcpy( _lightAmbient, lightAmbient, 3 * sizeof ( float ) );
 }
 
 
@@ -124,15 +124,13 @@ void DeferredShader::loadVariables( )
     glUniform3f( parameterLightPosition, _lightPosition[ 0 ], _lightPosition[ 1 ], _lightPosition[ 2 ] );
 
     unsigned int parameterLightDifuse = glGetUniformLocation( _glShader, "lightDifuse" );
-    glUniform4f( parameterLightDifuse, _lightDifuse[ 0 ], _lightDifuse[ 1 ], _lightDifuse[ 2 ], _lightDifuse[ 3 ] );
+    glUniform3f( parameterLightDifuse, _lightDifuse[ 0 ], _lightDifuse[ 1 ], _lightDifuse[ 2 ] );
 
     unsigned int parameterLightAmbient = glGetUniformLocation( _glShader, "lightAmbient" );
-    glUniform4f( parameterLightAmbient, _lightAmbient[ 0 ], _lightAmbient[ 1 ], _lightAmbient[ 2 ],
-        _lightAmbient[ 3 ] );
+    glUniform3f( parameterLightAmbient, _lightAmbient[ 0 ], _lightAmbient[ 1 ], _lightAmbient[ 2 ] );
 
     unsigned int parameterLightSpecular = glGetUniformLocation( _glShader, "lightSpecular" );
-    glUniform4f( parameterLightSpecular, _lightSpecular[ 0 ], _lightSpecular[ 1 ], _lightSpecular[ 2 ],
-        _lightSpecular[ 3 ] );
+    glUniform3f( parameterLightSpecular, _lightSpecular[ 0 ], _lightSpecular[ 1 ], _lightSpecular[ 2 ]);
 }
 
 std::string DeferredShader::readFile( const char* name )

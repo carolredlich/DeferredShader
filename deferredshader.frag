@@ -1,8 +1,8 @@
 #version 440 
 
-uniform vec4 lightAmbient;
-uniform vec4 lightDifuse;
-uniform vec4 lightSpecular;
+uniform vec3 lightAmbient;
+uniform vec3 lightDifuse;
+uniform vec3 lightSpecular;
 uniform vec3 lightPos_WS;
 uniform vec3 eyePos_WS;
 
@@ -28,14 +28,14 @@ void main()
     vec3 lightDir = lightPos_WS - position;
     vec3 L = normalize( lightDir );
 
-    vec4 mDif = texture( DifTex, UV );
-    vec4 mAmb = texture( AmbTex, UV );
-    vec4 mSpec = texture( SpecTex, UV );
+    vec3 mDif = texture( DifTex, UV ).xyz;
+    vec3 mAmb = texture( AmbTex, UV ).xyz;
+    vec3 mSpec = texture( SpecTex, UV ).xyz;
 
-    color = (mAmb * lightAmbient).rgb;
+    color = mAmb * lightAmbient;
     
     float diff = max( 0.0f, dot( normal, L ) );
-    color += diff * lightDifuse.rgb * mDif.rgb;
+    color += diff * lightDifuse * mDif;
     
     vec3 eyeDir = eyePos_WS - position;
 
@@ -45,7 +45,7 @@ void main()
         float spec = max( 0.0, dot( normalize( lightDir ), r ) );
         float fSpec = pow( spec  , 30 ); 
 
-        color += lightSpecular.rgb * fSpec * mSpec.rgb;
+        color += lightSpecular * fSpec * mSpec;
        
     }
 

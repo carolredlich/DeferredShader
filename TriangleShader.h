@@ -48,9 +48,9 @@ private:
     int _nVertices;
     double* _normal;
 
-    float _materialDifuse[ 4 ];
-    float _materialSpecular[ 4 ];
-    float _materialAmbient[ 4 ];
+    float _materialDifuse[ 3 ];
+    float _materialSpecular[ 3 ];
+    float _materialAmbient[ 3 ];
 };
 
 #endif  /* TRIANGLESHADER_H */

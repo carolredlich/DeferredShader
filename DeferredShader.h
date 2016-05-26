@@ -43,10 +43,10 @@ private:
 
     float _eye[ 3 ];
 
-    float _lightPosition[ 4 ];
-    float _lightDifuse[ 4 ];
-    float _lightSpecular[ 4 ];
-    float _lightAmbient[ 4 ];
+    float _lightPosition[ 3 ];
+    float _lightDifuse[ 3 ];
+    float _lightSpecular[ 3 ];
+    float _lightAmbient[ 3 ];
 
 };
 

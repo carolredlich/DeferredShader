@@ -106,9 +106,9 @@ void TriangleShader::setNormal( double* normal )
 void TriangleShader::setMaterial( float* materialDifuse,
                    float* materialSpecular, float* materialAmbient )
 {
-    memcpy( _materialDifuse, materialDifuse, 4 * sizeof ( float ) );
-    memcpy( _materialSpecular, materialSpecular, 4 * sizeof ( float ) );
-    memcpy( _materialAmbient, materialAmbient, 4 * sizeof ( float ) );
+    memcpy( _materialDifuse, materialDifuse, 3 * sizeof ( float ) );
+    memcpy( _materialSpecular, materialSpecular, 3 * sizeof ( float ) );
+    memcpy( _materialAmbient, materialAmbient, 3 * sizeof ( float ) );
 }
 
 
@@ -132,15 +132,13 @@ void TriangleShader::loadVariables()
 
     //Material
     unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
-    glUniform4f( parameterMaterialDifuse, _materialDifuse[ 0 ], _materialDifuse[ 1 ], _materialDifuse[ 2 ], _materialDifuse[ 3 ] );
+    glUniform3f( parameterMaterialDifuse, _materialDifuse[ 0 ], _materialDifuse[ 1 ], _materialDifuse[ 2 ] );
 
     unsigned int parameterMaterialAmbient = glGetUniformLocation( _glShader, "materialAmbient" );
-    glUniform4f( parameterMaterialAmbient, _materialAmbient[ 0 ], _materialAmbient[ 1 ], _materialAmbient[ 2 ],
-                 _materialAmbient[ 3 ] );
+    glUniform3f( parameterMaterialAmbient, _materialAmbient[ 0 ], _materialAmbient[ 1 ], _materialAmbient[ 2 ] );
 
     unsigned int parameterMaterialSpecular = glGetUniformLocation( _glShader, "materialSpecular" );
-    glUniform4f( parameterMaterialSpecular, _materialSpecular[ 0 ], _materialSpecular[ 1 ], _materialSpecular[ 2 ],
-                 _materialSpecular[ 3 ] );
+    glUniform3f( parameterMaterialSpecular, _materialSpecular[ 0 ], _materialSpecular[ 1 ], _materialSpecular[ 2 ] );
 
     //Matrizes
     unsigned int parameterMvp = glGetUniformLocation( _glShader, "mvp" );
