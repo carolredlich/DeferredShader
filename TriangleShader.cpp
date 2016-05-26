@@ -94,11 +94,12 @@ void TriangleShader::setNormal( double* normal )
 }
 
 void TriangleShader::setMaterial( float* materialDifuse,
-    float* materialSpecular, float* materialAmbient )
+    float* materialSpecular, float* materialAmbient, float materialShiness )
 {
     memcpy( _materialDifuse, materialDifuse, 3 * sizeof ( float ) );
     memcpy( _materialSpecular, materialSpecular, 3 * sizeof ( float ) );
     memcpy( _materialAmbient, materialAmbient, 3 * sizeof ( float ) );
+    _materialShiness = materialShiness;
 }
 
 void TriangleShader::setTexCoord( double* texCoord )
@@ -157,6 +158,9 @@ void TriangleShader::loadVariables( )
 
     unsigned int parameterMaterialSpecular = glGetUniformLocation( _glShader, "materialSpecular" );
     glUniform3f( parameterMaterialSpecular, _materialSpecular[ 0 ], _materialSpecular[ 1 ], _materialSpecular[ 2 ] );
+    
+    unsigned int parameterMaterialShiness = glGetUniformLocation( _glShader, "materialShiness" );
+    glUniform1f( parameterMaterialShiness,  _materialShiness );
 
     //Matrizes
     unsigned int parameterMvp = glGetUniformLocation( _glShader, "mvp" );

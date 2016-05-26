@@ -81,10 +81,6 @@ void DeferredShader::setEye( double* eye )
 void DeferredShader::setLight( float* lightPosition, float* lightDifuse,
     float* lightSpecular, float* lightAmbient, unsigned int nLight )
 {
-//    memcpy( _lightPosition, lightPosition, nLight * sizeof ( float ) );
-//    memcpy( _lightDifuse, lightDifuse, nLight * sizeof ( float ) );
-//    memcpy( _lightSpecular, lightSpecular, nLight * sizeof ( float ) );
-//    memcpy( _lightAmbient, lightAmbient, nLight * sizeof ( float ) );
     
     _lightPosition = lightPosition;
     _lightDifuse = lightDifuse;

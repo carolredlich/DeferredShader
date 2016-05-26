@@ -8,6 +8,7 @@
 #include <iterator>
 #include <math.h>
 #include "Vec3.h"
+#include"ColorTable.h"
 
 MainWindow::MainWindow( )
 {
@@ -109,6 +110,23 @@ void MainWindow::initializeCanvas( )
 
 void MainWindow::drawScene( )
 {
+
+    unsigned int nLight = 10;
+
+    unsigned int numSpheres = 10;
+
+    //Define a posição da câmera
+    //Descomentar o que quiser usar
+    //    double eye[ 3 ] = { 2, 2, 3 };
+    //        double eye[3] = { 0, 0, 3 }; //1 bola
+    //    double eye[3] = { 3, 0, 0 }; //1 bola
+    //    double eye[3] = { 0, 3, 0.1 }; //1 bola
+    //    double eye[3] = { -15, 2, 0 };
+    //    double eye[3] = { 15, 2, 7 };
+    double eye[3] = { 15, 15, 0 };
+    //        double eye[3] = { 15, 2, 15 };
+    //        double eye[3] = { 0.1, 25, 0 };
+
     initDeferredShader( );
     glEnable( GL_DEPTH_TEST );
     //Limpa a janela.
@@ -121,18 +139,20 @@ void MainWindow::drawScene( )
     std::vector < float > lightDifuse;
     std::vector < float > lightSpecular;
     std::vector < float > lightAmbient;
-    unsigned int nLight = 2;
 
-    float lPos[] = { 20, 20, 20 };
-    lightPosition.insert( lightPosition.end( ), lPos, lPos + 3 );
-    float lPos2[] = { 20, 20, 0 };
-    lightPosition.insert( lightPosition.end( ), lPos2, lPos2 + 3 );
     for( unsigned int i = 0; i < nLight; i++ )
     {
-        float dif[] = { 0.6, 0.6, 0.6 };
+        float lPos[] = { ( ( rand( ) % 60 ) - 30 ), ( ( rand( ) % 60 ) - 30 ), ( ( rand( ) % 60 ) - 30 ) };
+        lightPosition.insert( lightPosition.end( ), lPos, lPos + 3 );
+        
+        int idx = rand()%13;
+        
+        float *dif = colortable[idx];
         lightDifuse.insert( lightDifuse.end( ), dif, dif + 3 );
-        float spec[] = { 1, 1, 1 };
+        
+        float *spec = colortable[idx];
         lightSpecular.insert( lightSpecular.end( ), spec, spec + 3 );
+        
         float amb[] = { 0.1, 0.1, 0.1 };
         lightAmbient.insert( lightAmbient.end( ), amb, amb + 3 );
     }
@@ -146,31 +166,20 @@ void MainWindow::drawScene( )
     _viewMatrix.loadIdentity( );
     _modelMatrix.loadIdentity( );
 
-    //Define a posição da câmera
-    //Descomentar o que quiser usar
-    //    double eye[ 3 ] = { 2, 2, 3 };
-    //    double eye[3] = { -500, -100, 200 };
-    //    double eye[3] = { 0, 0, 3 }; //1 bola
-    //    double eye[3] = { 3, 0, 0 }; //1 bola
-    //    double eye[3] = { 0, 3, 0.1 }; //1 bola
-    //    double eye[3] = { -15, 2, 0 };
-    double eye[3] = { 15, 2, 7 };
-    //    double eye[3] = { 15, 15, 0 };
-    //    double eye[3] = { 15, 2, 15 };
+
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
 
 
-    unsigned int numSpheres = 10;
     for( unsigned int i = 0; i < numSpheres; i++ )
     {
         for( unsigned int j = 0; j < numSpheres; j++ )
         {
             float materialAmbient[ 3 ] = { 1, 1, 1 };
-            //            float materialDifuse[ 3 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1 };
             float materialDifuse[ 3 ] = { 1, 1, 1 };
             float materialSpecular[ 3 ] = { 1, 1, 1 };
+            float materialShiness = 0.3;
 
             //Se o shader não estiver alocado, compila
             if( !_surface[ 0 ]._shader->isAllocated( ) )
@@ -178,8 +187,8 @@ void MainWindow::drawScene( )
                 _surface[ 0 ]._shader->compileShader( );
             }
 
-            //Passa informações do material pro shader 
-            _surface[0]._shader->setMaterial( materialDifuse, materialSpecular, materialAmbient );
+            //Passa informações do material pro shader
+            _surface[0]._shader->setMaterial( materialDifuse, materialSpecular, materialAmbient, materialShiness );
 
             //Passa os vértices da superficie para o shader
             _surface[ 0 ]._shader->setVertices( &_surface[ 0 ]._vertex[ 0 ], _surface[ 0 ]._vertex.size( ) / 3 );
@@ -233,7 +242,6 @@ void MainWindow::drawScene( )
         }
     }
 
-
     // Render to the screen
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     // Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -284,7 +292,7 @@ void MainWindow::drawScene( )
     deferredShader->unload( );
 
     glDisable( GL_TEXTURE_2D );
-
+    
 }
 
 void MainWindow::resizeCanvas( int width, int height )

@@ -31,7 +31,7 @@ public:
     void setNormal( double* normal );
 
     void setMaterial( float* materialDifuse,
-                   float* materialSpecular, float* materialAmbient );
+                   float* materialSpecular, float* materialAmbient, float materialShiness  );
     
     
     void setTexCoord( double* texCoord );
@@ -62,6 +62,7 @@ private:
     float _materialDifuse[ 3 ];
     float _materialSpecular[ 3 ];
     float _materialAmbient[ 3 ];
+    float _materialShiness;
 };
 
 #endif  /* TRIANGLESHADER_H */
