@@ -13,8 +13,8 @@ in vec2 texCoordFrag_MS;
 
 
 
-out vec4 position;
-out vec4 normal;
+out vec3 position;
+out vec3 normal;
 out vec3 difuse;
 out vec3 ambient;
 out vec3 specular;
@@ -22,8 +22,8 @@ out vec3 specular;
 
 void main( void )
 {
-    position = vec4( vertex_WS, 1) ;
-    normal = vec4( normal_WS, 1);
+    position = vertex_WS;
+    normal = normal_WS; 
     difuse = texture( colorTextureSampler, texCoordFrag_MS ).rgb;
     ambient = materialAmbient;
     specular = materialSpecular;

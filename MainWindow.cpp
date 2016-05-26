@@ -117,13 +117,23 @@ void MainWindow::drawScene( )
     glBindFramebuffer( GL_FRAMEBUFFER, _deferredFBO );
     glViewport( 0, 0, _width, _height );
 
+    std::vector < float > lightPosition;
+    std::vector < float > lightDifuse;
+    std::vector < float > lightSpecular;
+    std::vector < float > lightAmbient;
+    int nLight = 1;
 
-    float lightPosition[ ] = { 20, 20, 20 };
-    //float lightDifuse[ ] = { rand() % 3, rand() % 3, rand() % 3 };
-    float lightDifuse[ ] = { 0.6, 0.6, 0.6 };
-    float lightSpecular[ ] = { 1, 1, 1 };
-    float lightAmbient[ ] = { 0.1, 0.1, 0.1 };
-
+    float lPos[] = { 20, 20, 20 };
+    lightPosition.insert( lightPosition.end( ), lPos, lPos + 3 );
+    for( unsigned int i = 0; i < nLight; i++ )
+    {
+        float dif[] = { 0.6, 0.6, 0.6 };
+        lightDifuse.insert( lightDifuse.end( ), dif, dif + 3 );
+        float spec[] = { 1, 1, 1 };
+        lightSpecular.insert( lightSpecular.end( ), spec, spec + 3 );
+        float amb[] = { 0.1, 0.1, 0.1 };
+        lightAmbient.insert( lightAmbient.end( ), amb, amb + 3 );
+    }
 
 
     //Descomentar caso queira ver os triangulos
@@ -142,9 +152,9 @@ void MainWindow::drawScene( )
     //    double eye[3] = { 3, 0, 0 }; //1 bola
     //    double eye[3] = { 0, 3, 0.1 }; //1 bola
     //    double eye[3] = { -15, 2, 0 };
-        double eye[3] = { 15, 2, 7 };
-//    double eye[3] = { 15, 15, 0 };
-//    double eye[3] = { 15, 2, 15 };
+    double eye[3] = { 15, 2, 7 };
+    //    double eye[3] = { 15, 15, 0 };
+    //    double eye[3] = { 15, 2, 15 };
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
@@ -253,7 +263,7 @@ void MainWindow::drawScene( )
         deferredShader->compileShader( );
     }
     deferredShader->setVertices( quadVertices, 4 );
-    deferredShader->setLight( lightPosition, lightDifuse, lightSpecular, lightAmbient );
+    deferredShader->setLight( &lightPosition[0], &lightDifuse[0], &lightSpecular[0], &lightAmbient[0] );
     deferredShader->setEye( eye );
     deferredShader->load( );
     deferredShader->loadVariables( );
