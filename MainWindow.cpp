@@ -138,7 +138,7 @@ void MainWindow::drawScene( )
     //    double eye[3] = { 0, 3, 0.1 }; //1 bola
     //    double eye[3] = { -15, 2, 0 };
     //    double eye[3] = { 15, 2, 7 };
-    double eye[3] = { 18, 18, 0 };
+    double eye[3] = { 10, 10, 10 };
 
     //Define a câmera
     _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
@@ -151,7 +151,7 @@ void MainWindow::drawScene( )
         {
             float materialAmbient[ 4 ] = { 1, 1, 1, 1.0 };
             float materialDifuse[ 4 ] = { ( float ) ( i + 1 ) / numSpheres, ( float ) ( j + 1 ) / numSpheres, 1, 1 };
-            float materialSpecular[ 4 ] = { 1, 1, 1, 30 };
+            float materialSpecular[ 4 ] = { 1, 1, 1, 1 };
 
             //Se o shader não estiver alocado, compila
             if( !_surface[ 0 ]._shader->isAllocated( ) )
@@ -162,19 +162,11 @@ void MainWindow::drawScene( )
             //Passa informações do material pro shader 
             _surface[0]._shader->setMaterial( materialDifuse, materialSpecular, materialAmbient );
 
-            //Passa a posicao da câmera pro shader
-            _surface[ 0 ]._shader->setEye( eye );
-
-            //Passa os parametros da luz pro shader
-            _surface[ 0 ]._shader->setLight( lightPosition, lightDifuse, lightSpecular, lightAmbient );
-
             //Passa os vértices da superficie para o shader
             _surface[ 0 ]._shader->setVertices( &_surface[ 0 ]._vertex[ 0 ], _surface[ 0 ]._vertex.size( ) / 3 );
 
             //Seta a normal dos vértices da superficie para o shader
             _surface[ 0 ]._shader->setNormal( &_surface[ 0 ]._normal[ 0 ] );
-
-            _surface[ 0 ]._shader->setVMatrix( _viewMatrix );
 
             _projectionMatrix.push( );
             _modelMatrix.push( );
@@ -189,12 +181,6 @@ void MainWindow::drawScene( )
             _viewMatrix.multMatrix( _modelMatrix );
             _projectionMatrix.multMatrix( _viewMatrix );
             _surface[ 0 ]._shader->setMvpMatrix( _projectionMatrix );
-            _surface[ 0 ]._shader->setMvMatrix( _viewMatrix );
-
-            //Pega a matriz que transforma a normal
-            double normal[ 9 ];
-            _viewMatrix.getMatrixInverseTransposed( normal );
-            _surface[ 0 ]._shader->setNormalMatrix( normal );
 
             _viewMatrix.pop( );
             _surface[ 0 ]._shader->setMMatrix( _modelMatrix );

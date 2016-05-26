@@ -5,8 +5,8 @@
  * Created on 8 de Abril de 2016, 10:53
  */
 
-#ifndef SPHERESHADER_H
-#define SPHERESHADER_H
+#ifndef TRIANGLESHADER_H
+#define TRIANGLESHADER_H
 
 #include "GraphicsShader.h"
 #include <string>
@@ -24,33 +24,17 @@ public:
 
     void setMvpMatrix( double* mvp );
 
-    void setMvMatrix( double* mv );
-
     void setMMatrix( double* m );
-
-    void setVMatrix( double* v );
-
-    void setNormalMatrix( double* normal );
 
     void setVertices( double* vertices, int n );
 
     void setNormal( double* normal );
 
-    void setEye( double* eye );
-
-    void setLight( float* lightPosition, float* lightDifuse,
-                   float* lightSpecular, float* lightAmbient );
-    
     void setMaterial( float* materialDifuse,
                    float* materialSpecular, float* materialAmbient );
     
-    void setShaderPrograms( std::string vertexShaderFileName = "sphere.vert",
-                  std::string fragmentShaderFileName = "sphere.frag" );
-
     void loadVariables();
     
-    unsigned int getShaderId();
-
 private:
 
 
@@ -58,24 +42,11 @@ private:
 
     float _mvpMatrix[ 16 ];
 
-    float _mvMatrix[ 16 ];
-
     float _mMatrix[ 16 ];
-
-    float _vMatrix[ 16 ];
-
-    float _normalMatrix[ 9 ];
 
     double* _vertex;
     int _nVertices;
     double* _normal;
-
-    float _eye[ 3 ];
-
-    float _lightPosition[ 4 ];
-    float _lightDifuse[ 4 ];
-    float _lightSpecular[ 4 ];
-    float _lightAmbient[ 4 ];
 
     float _materialDifuse[ 4 ];
     float _materialSpecular[ 4 ];
