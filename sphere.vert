@@ -33,4 +33,30 @@ void main( void )
     //Projeta as coordendas do vertice.
     gl_Position = mvp * vec4( vertex_MS, 1.0f );
 }
+/*
+#version 440
 
+uniform mat4 mvp;
+uniform mat4 mv
+uniform mat3 normalMatrix;
+
+in vec3 vertex_MS;
+in vec3 normal_MS;
+
+
+smooth out vec3 vertex_CS;
+smooth out vec3 normal_CS;
+
+
+void main( void )
+{
+    normal_CS = normalMatrix * normalize( normal_MS );
+
+    vertex_CS = ( mv * vec4( vertex_MS, 1 ) ).xyz;
+    
+
+    //Projeta as coordendas do vertice.
+    gl_Position = mvp * vec4( vertex_MS, 1.0f );
+}
+
+*/

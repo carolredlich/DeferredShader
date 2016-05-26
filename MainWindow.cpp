@@ -104,7 +104,7 @@ void MainWindow::initializeCanvas( )
 
 void MainWindow::drawScene( )
 {
-    initDeferredShader( ); 
+    initDeferredShader( );
     glEnable( GL_DEPTH_TEST );
     //Limpa a janela.
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -122,7 +122,7 @@ void MainWindow::drawScene( )
 
 
     //Descomentar caso queira ver os triangulos
-     //   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    //   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     //Carrega a identidade na model view
     _modelViewMatrix.loadIdentity( );
@@ -215,47 +215,47 @@ void MainWindow::drawScene( )
         }
     }
 
-    
+
     // Render to the screen
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     // Render on the whole framebuffer, complete from the lower left corner to the upper right
     glViewport( 0, 0, _width, _height );
     // Clear the screen
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
+
     // The fullscreen quad's FBO
-    static double quadVertices[] ={
+    static double quadVertices[] = {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
         -1.0f, 1.0f, 0.0f,
         1.0f, 1.0f, 0.0f,
     };
-    
-    static unsigned int triangles[] ={
+
+    static unsigned int triangles[] = {
         0, 1, 2,
         2, 1, 3
     };
-    
+
     // Bind our texture in Texture Unit 0
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, _deferredFBO );
+    //glActiveTexture( GL_TEXTURE0 );
+    //glBindTexture( GL_TEXTURE_2D, _deferredFBO );
 
     glEnableVertexAttribArray( 0 );
     DeferredShader* deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
-    if( !deferredShader->isAllocated() )
+    if( !deferredShader->isAllocated( ) )
     {
-        deferredShader->compileShader();
+        deferredShader->compileShader( );
     }
-    deferredShader->setVertices(quadVertices, 4 );
-    deferredShader->load();
-    deferredShader->loadVariables();
-    
+    deferredShader->setVertices( quadVertices, 4 );
+    deferredShader->load( );
+    deferredShader->loadVariables( );
+
     // Draw the triangles !s
     glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, triangles );
-    
+
     glDisableVertexAttribArray( 0 );
 
-    deferredShader->unload();
+    deferredShader->unload( );
 }
 
 void MainWindow::resizeCanvas( int width, int height )
@@ -337,7 +337,7 @@ void MainWindow::createGBufferTex( GLenum texUnit, GLenum format, GLuint &texId 
     glGenTextures( 1, &texId );
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexStorage2D( GL_TEXTURE_2D, 1, format, _width, _height );
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, _width, _height, 0, GL_RGB, GL_FLOAT, 0);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, format, _width, _height, 0, GL_RGB, GL_FLOAT, 0);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
@@ -346,8 +346,7 @@ void MainWindow::createGBufferTex( GLenum texUnit, GLenum format, GLuint &texId 
 
 void MainWindow::initDeferredShader( )
 {
-    GLuint depthBuf, posTex, normTex, colorTex;
-
+    GLuint depthBuf, posTex, normTex, difTex, ambTex, specTex;
     //Cria e binda o fbo
     glGenFramebuffers( 1, &_deferredFBO );
     glBindFramebuffer( GL_FRAMEBUFFER, _deferredFBO );
@@ -358,29 +357,30 @@ void MainWindow::initDeferredShader( )
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _width, _height );
 
 
-    createGBufferTex( GL_TEXTURE2, GL_RGB32F, posTex );
-    createGBufferTex( GL_TEXTURE3, GL_RGB32F, normTex );
-    createGBufferTex( GL_TEXTURE4, GL_RGB8, colorTex );
+    createGBufferTex( GL_TEXTURE0, GL_RGB32F, posTex );
+    createGBufferTex( GL_TEXTURE1, GL_RGB32F, normTex );
+    createGBufferTex( GL_TEXTURE2, GL_RGB32F, difTex );
+    //    createGBufferTex( GL_TEXTURE3, GL_RGB8, ambTex );
+    //    createGBufferTex( GL_TEXTURE4, GL_RGB8, specTex );
 
     // Attach the images to the framebuffer
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-        GL_RENDERBUFFER, depthBuf );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-        GL_TEXTURE_2D, posTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-        GL_TEXTURE_2D, normTex, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,
-        GL_TEXTURE_2D, colorTex, 0 );
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex, 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex, 0 );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, difTex, 0 );
+    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, ambTex, 0 );
+    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, specTex, 0 );
 
-    GLenum drawBuffers[] = { GL_NONE, GL_COLOR_ATTACHMENT0,
-        GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    //, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 
-    glDrawBuffers( 4, drawBuffers );
-
+    glDrawBuffers( 3, drawBuffers );
+ glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
     {
         return;
     }
 
-  
+
 }

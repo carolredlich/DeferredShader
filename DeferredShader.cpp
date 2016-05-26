@@ -114,7 +114,6 @@ void DeferredShader::setVertices( double* vertices, int n )
     _nVertices = n;
 }
 
-
 void DeferredShader::setNormal( double* normal )
 {
     _normal = normal;
@@ -153,19 +152,19 @@ void DeferredShader::loadVariables( )
 
 
 
-//    glGenBuffers( 1, &_quad_vertexbuffer );
-//    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
-//    glBufferData( GL_ARRAY_BUFFER, sizeof (quadVertices ), quadVertices, GL_STATIC_DRAW );
-//    
-//    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
-//    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
-    
-    
+    //    glGenBuffers( 1, &_quad_vertexbuffer );
+    //    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
+    //    glBufferData( GL_ARRAY_BUFFER, sizeof (quadVertices ), quadVertices, GL_STATIC_DRAW );
+    //    
+    //    glBindBuffer( GL_ARRAY_BUFFER, _quad_vertexbuffer );
+    //    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
+
+
     unsigned int parameterVertex = glGetAttribLocation( _glShader, "vertex" );
     glBindBuffer( GL_ARRAY_BUFFER, parameterVertex );
     glVertexAttribPointer( parameterVertex, 3, GL_DOUBLE, GL_FALSE, 0, _vertex );
     glEnableVertexAttribArray( parameterVertex );
-    
+
     //
     //    unsigned int parameterNormal = glGetAttribLocation( _glShader, "normal_MS" );
     //    glVertexAttribPointer( parameterNormal, 3, GL_DOUBLE, GL_FALSE, 0, _normal );
@@ -178,13 +177,19 @@ void DeferredShader::loadVariables( )
     //    
     unsigned int parameterTexture0 = glGetUniformLocation( _glShader, "PositionTex" );
     glUniform1i( parameterTexture0, 0 );
-    //
-    //    unsigned int parameterTexture3 = glGetUniformLocation( _glShader, "NormalTex" );
-    //    glUniform1i( parameterTexture3, 3);
-    //    
-    //    unsigned int parameterTexture4 = glGetUniformLocation( _glShader, "ColorTex" );
-    //    glUniform1i( parameterTexture4, 4 );
-    //    
+
+    unsigned int parameterTexture1 = glGetUniformLocation( _glShader, "NormalTex" );
+    glUniform1i( parameterTexture1, 1 );
+
+    unsigned int parameterTexture2 = glGetUniformLocation( _glShader, "DifTex" );
+    glUniform1i( parameterTexture2, 2 );
+
+//    unsigned int parameterTexture3 = glGetUniformLocation( _glShader, "AmbTex" );
+//    glUniform1i( parameterTexture3, 3 );
+//
+//    unsigned int parameterTexture4 = glGetUniformLocation( _glShader, "SpecTex" );
+//    glUniform1i( parameterTexture4, 4 );
+
     //    //Material
     //      unsigned int parameterMaterialDifuse = glGetUniformLocation( _glShader, "materialDifuse" );
     //    glUniform4f( parameterMaterialDifuse, _materialDifuse[ 0 ], _materialDifuse[ 1 ], _materialDifuse[ 2 ], _materialDifuse[ 3 ] );
