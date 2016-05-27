@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <math.h>
+#include <cmath>
 #include "Vec3.h"
 #include"ColorTable.h"
 
@@ -26,6 +27,27 @@ MainWindow::MainWindow( )
     //Cria uma superficie e insere na lista de superficies
     _surface.push_back( Surface( shader ) );
     //    _surface.push_back( Surface( "esfera3.off", shader ) );
+
+    _deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
+
+    //Define a posição da câmera
+    _eye[0] = 20;
+    _eye[1] = 20;
+    _eye[2] = 0;
+
+    _nLight = 60;
+
+    _center.resize( 2 * _nLight );
+    _radius.resize( _nLight );
+
+    for( unsigned int i = 0; i < _nLight; i++ )
+    {
+        _center.push_back( ( rand( ) % 40 ) - 20 );
+        _center.push_back( ( rand( ) % 40 ) - 20 );
+        _radius.push_back( rand( ) % 10 );
+    }
+
+
 }
 
 void MainWindow::createWindow( )
@@ -56,7 +78,7 @@ void MainWindow::createWindow( )
 
     //Define propriedades do dialogo.
     IupSetAttribute( _dialog, IUP_MARGIN, "10x10" );
-    IupSetAttribute( _dialog, IUP_TITLE, "Trabalho 1" );
+    IupSetAttribute( _dialog, IUP_TITLE, "Trabalho 1 - Deferred Shader" );
     IupSetAttribute( _dialog, "THIS", ( char* ) this );
 
     //Define callbacks do botao.
@@ -110,22 +132,7 @@ void MainWindow::initializeCanvas( )
 
 void MainWindow::drawScene( )
 {
-
-    unsigned int nLight = 10;
-
     unsigned int numSpheres = 10;
-
-    //Define a posição da câmera
-    //Descomentar o que quiser usar
-    //    double eye[ 3 ] = { 2, 2, 3 };
-    //        double eye[3] = { 0, 0, 3 }; //1 bola
-    //    double eye[3] = { 3, 0, 0 }; //1 bola
-    //    double eye[3] = { 0, 3, 0.1 }; //1 bola
-    //    double eye[3] = { -15, 2, 0 };
-    //    double eye[3] = { 15, 2, 7 };
-    double eye[3] = { 15, 15, 0 };
-    //        double eye[3] = { 15, 2, 15 };
-    //        double eye[3] = { 0.1, 25, 0 };
 
     initDeferredShader( );
     glEnable( GL_DEPTH_TEST );
@@ -134,28 +141,6 @@ void MainWindow::drawScene( )
 
     glBindFramebuffer( GL_FRAMEBUFFER, _deferredFBO );
     glViewport( 0, 0, _width, _height );
-
-    std::vector < float > lightPosition;
-    std::vector < float > lightDifuse;
-    std::vector < float > lightSpecular;
-    std::vector < float > lightAmbient;
-
-    for( unsigned int i = 0; i < nLight; i++ )
-    {
-        float lPos[] = { ( ( rand( ) % 60 ) - 30 ), ( ( rand( ) % 60 ) - 30 ), ( ( rand( ) % 60 ) - 30 ) };
-        lightPosition.insert( lightPosition.end( ), lPos, lPos + 3 );
-        
-        int idx = rand()%13;
-        
-        float *dif = colortable[idx];
-        lightDifuse.insert( lightDifuse.end( ), dif, dif + 3 );
-        
-        float *spec = colortable[idx];
-        lightSpecular.insert( lightSpecular.end( ), spec, spec + 3 );
-        
-        float amb[] = { 0.1, 0.1, 0.1 };
-        lightAmbient.insert( lightAmbient.end( ), amb, amb + 3 );
-    }
 
 
     //Descomentar caso queira ver os triangulos
@@ -169,7 +154,7 @@ void MainWindow::drawScene( )
 
 
     //Define a câmera
-    _viewMatrix.lookAt( eye[ 0 ], eye[ 1 ], eye[ 2 ], 0, 0, 0, 0, 1, 0 );
+    _viewMatrix.lookAt( _eye[ 0 ], _eye[ 1 ], _eye[ 2 ], 0, 0, 0, 0, 1, 0 );
 
 
     for( unsigned int i = 0; i < numSpheres; i++ )
@@ -177,7 +162,7 @@ void MainWindow::drawScene( )
         for( unsigned int j = 0; j < numSpheres; j++ )
         {
             float materialAmbient[ 3 ] = { 1, 1, 1 };
-            float materialDifuse[ 3 ] = { 1, 1, 1 };
+            float materialDifuse[ 3 ] = { 0, 0, 1 };
             float materialSpecular[ 3 ] = { 1, 1, 1 };
             float materialShiness = 0.3;
 
@@ -242,57 +227,8 @@ void MainWindow::drawScene( )
         }
     }
 
-    // Render to the screen
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-    // Render on the whole framebuffer, complete from the lower left corner to the upper right
-    glViewport( 0, 0, _width, _height );
-    // Clear the screen
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    renderQuad( );
 
-    // The fullscreen quad's FBO
-    static double quadVertices[] = {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-    };
-
-    static unsigned int triangles[] = {
-        0, 1, 2,
-        2, 1, 3
-    };
-
-    //    // Bind our texture in Texture Unit 0
-    //    glActiveTexture( GL_TEXTURE0 );
-    //    glBindTexture( GL_TEXTURE_2D, _deferredFBO );
-
-    glEnableVertexAttribArray( 0 );
-    DeferredShader* deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
-    if( !deferredShader->isAllocated( ) )
-    {
-        deferredShader->compileShader( );
-    }
-    deferredShader->setVertices( quadVertices, 4 );
-    deferredShader->setLight( &lightPosition[0], &lightDifuse[0], &lightSpecular[0], &lightAmbient[0], nLight );
-    deferredShader->setEye( eye );
-    deferredShader->load( );
-    deferredShader->loadVariables( );
-
-
-    //Habilita o uso de textura 1D.
-    glEnable( GL_TEXTURE_2D );
-    bindDeferredShaderTextures( );
-
-
-    // Draw the triangles !s
-    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, triangles );
-
-    glDisableVertexAttribArray( 0 );
-
-    deferredShader->unload( );
-
-    glDisable( GL_TEXTURE_2D );
-    
 }
 
 void MainWindow::resizeCanvas( int width, int height )
@@ -331,7 +267,7 @@ int MainWindow::actionCanvasCallback( Ihandle* canvas )
     MainWindow* window = ( MainWindow* ) IupGetAttribute( canvas, "THIS" );
 
     //Redesenha a janela.
-    window->drawScene( );
+    window->renderQuad( );
 
     //Troca os buffers.
     IupGLSwapBuffers( canvas );
@@ -349,6 +285,7 @@ int MainWindow::resizeCanvasCallback( Ihandle* canvas, int width, int height )
 
     //Redesenha a janela.
     window->resizeCanvas( width, height );
+    window->drawScene( );
 
     //Marca o canvas para ser redesenhado.
     IupUpdate( canvas );
@@ -359,6 +296,21 @@ int MainWindow::resizeCanvasCallback( Ihandle* canvas, int width, int height )
 int MainWindow::buttonCanvasCallback( Ihandle* canvas, int button, int pressed,
     int x, int y, char* status )
 {
+    if( pressed == 0 )
+        return IUP_DEFAULT;
+
+    //Torna o canvas como corrente.
+    IupGLMakeCurrent( canvas );
+
+    //Obtem ponteiro para o this.
+    MainWindow* window = ( MainWindow* ) IupGetAttribute( canvas, "THIS" );
+
+    //Redesenha a janela.
+    window->renderQuad( );
+
+    //Marca o canvas para ser redesenhado.
+    IupUpdate( canvas );
+
     return IUP_DEFAULT;
 }
 
@@ -482,4 +434,99 @@ void MainWindow::bindDeferredShaderTextures( )
 
     glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, _dsTextureId[4] );
+}
+
+void MainWindow::renderQuad( )
+{
+
+    _lightAmbient.resize( 3 * _nLight );
+    _lightDifuse.resize( 3 * _nLight );
+    _lightSpecular.resize( 3 * _nLight );
+    _lightPosition.resize( 3 * _nLight );
+
+    for( unsigned int i = 0; i < _nLight; i++ )
+    {
+//        _lightPosition[3 * i + 0] = 10 + 40 * std::sin( i * 360.0 / _nLight );
+//        _lightPosition[3 * i + 1] = 20;
+//        _lightPosition[3 * i + 2] = 10 + 40 * std::cos( i * 360.0 / _nLight );
+//        
+////        _lightPosition[3 * i + 0] = _center[2*i+0] + _radius[i] * std::sin( i * 360.0 / _nLight );
+////        _lightPosition[3 * i + 1] = 20;
+////        _lightPosition[3 * i + 2] = _center[2*i+1] + _radius[i] * std::cos( i * 360.0 / _nLight );
+
+                _lightPosition[3 * i + 0] = ( ( rand( ) % 60 ) - 30 );
+                _lightPosition[3 * i + 1] = 20;//( ( rand( ) % 60 ) - 30 );
+                _lightPosition[3 * i + 2] = ( ( rand( ) % 60 ) - 30 );
+
+        int idx = rand( ) % 13;
+
+        _lightDifuse[3 * i + 0] = colortable[idx][0];
+        _lightDifuse[3 * i + 1] = colortable[idx][1];
+        _lightDifuse[3 * i + 2] = colortable[idx][2];
+
+        _lightSpecular[3 * i + 0] = colortable[idx][0];
+        _lightSpecular[3 * i + 1] = colortable[idx][1];
+        _lightSpecular[3 * i + 2] = colortable[idx][2];
+
+        _lightAmbient[3 * i + 0] = 0.1;
+        _lightAmbient[3 * i + 1] = 0.1;
+        _lightAmbient[3 * i + 2] = 0.1;
+
+    }
+
+    // Render to the screen
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    // Render on the whole framebuffer, complete from the lower left corner to the upper right
+    glViewport( 0, 0, _width, _height );
+    // Clear the screen
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    // The fullscreen quad's FBO
+    static double quadVertices[] = {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+
+    static unsigned int triangles[] = {
+        0, 1, 2,
+        2, 1, 3
+    };
+
+    //    // Bind our texture in Texture Unit 0
+    //    glActiveTexture( GL_TEXTURE0 );
+    //    glBindTexture( GL_TEXTURE_2D, _deferredFBO );
+
+    glEnableVertexAttribArray( 0 );
+    if( !_deferredShader->isAllocated( ) )
+    {
+        _deferredShader->compileShader( );
+    }
+    _deferredShader->setVertices( quadVertices, 4 );
+    _deferredShader->setLight( &_lightPosition[0], &_lightDifuse[0], &_lightSpecular[0], &_lightAmbient[0], _nLight );
+    _deferredShader->setEye( _eye );
+    _deferredShader->load( );
+    _deferredShader->loadVariables( );
+
+
+    //Habilita o uso de textura 1D.
+    glEnable( GL_TEXTURE_2D );
+    bindDeferredShaderTextures( );
+
+
+    // Draw the triangles !s
+    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, triangles );
+
+    glDisableVertexAttribArray( 0 );
+
+    _deferredShader->unload( );
+
+    glDisable( GL_TEXTURE_2D );
+
+    _lightAmbient.clear( );
+    _lightDifuse.clear( );
+    _lightSpecular.clear( );
+    _lightPosition.clear( );
+
 }

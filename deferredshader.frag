@@ -1,7 +1,7 @@
 #version 440 
 
 
-const int NUM_LIGHTS = 30;
+const int NUM_LIGHTS = 60;
 uniform int nLight;
 uniform vec3 lightAmbient[NUM_LIGHTS];
 uniform vec3 lightDifuse[NUM_LIGHTS];
@@ -38,9 +38,11 @@ void main()
     {
         vec3 lightDir = lightPos_WS[i] - position;
         vec3 L = normalize( lightDir );
+        
+        float distance = length( lightDir );
 
         float diff = max( 0.0f, dot( normal, L ) );
-        color += (diff * lightDifuse[i] * mDif);
+        color += (diff * lightDifuse[i] * mDif) / ( (distance + nLight )*0.3);
 
         vec3 eyeDir = eyePos_WS - position;
 
@@ -50,8 +52,9 @@ void main()
             float spec = max( 0.0, dot( normalize( lightDir ), r ) );
             float fSpec = pow( spec  , 30 ); 
 
-            color += lightSpecular[i] * fSpec * mSpec;
+            color += (lightSpecular[i] * fSpec * mSpec);
         }
+        
     }
 
 }

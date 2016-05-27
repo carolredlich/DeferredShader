@@ -65,6 +65,8 @@ private:
     //Superficies a serem desenhadas
     std::vector< Surface > _surface;
 
+    double _eye[3];
+
     GLuint _deferredFBO;
     GLuint _quad_vertexbuffer;
 
@@ -75,7 +77,17 @@ private:
 
     GLuint _dsTextureId[ 5 ];
 
+    DeferredShader* _deferredShader;
 
+    std::vector < float > _lightPosition;
+    std::vector < float > _lightDifuse;
+    std::vector < float > _lightSpecular;
+    std::vector < float > _lightAmbient;
+
+    unsigned int _nLight;
+    
+    std::vector< float > _center;
+    std::vector< float > _radius;
 
 
 private:
@@ -108,6 +120,7 @@ private:
     void initBumpMapTexture();
     void bindBumpMapTextures();
     void bindDeferredShaderTextures();
+    void renderQuad();
 
 
 private:
@@ -162,6 +175,8 @@ private:
      */
     static int buttonCanvasCallback(Ihandle* canvas, int button, int pressed,
             int x, int y, char* status);
+
+    static int timer_cb(Ihandle *n);
 };
 
 #endif  /* IUPGLCANVASDUMMY_H */

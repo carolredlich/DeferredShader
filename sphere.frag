@@ -25,8 +25,8 @@ void main( void )
 {
     position = vertex_WS;
     normal = normal_WS; 
-    //difuse = materialDifuse;//texture( colorTextureSampler, texCoordFrag_MS ).rgb;
-    difuse =  texture( colorTextureSampler, texCoordFrag_MS ).rgb;
+    difuse = materialDifuse;//texture( colorTextureSampler, texCoordFrag_MS ).rgb;
+    //difuse =  texture( colorTextureSampler, texCoordFrag_MS ).rgb;
     ambient = materialAmbient;
     specular = vec4( materialSpecular, materialShiness);
     
