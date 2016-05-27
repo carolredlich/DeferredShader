@@ -31,22 +31,11 @@ MainWindow::MainWindow( )
     _deferredShader = new DeferredShader( "deferredshader.vert", "deferredshader.frag" );
 
     //Define a posição da câmera
-    _eye[0] = 20;
-    _eye[1] = 20;
-    _eye[2] = 0;
+    _eye[0] = 17;
+    _eye[1] = 17;
+    _eye[2] = 17;
 
-    _nLight = 60;
-
-    _center.resize( 2 * _nLight );
-    _radius.resize( _nLight );
-
-    for( unsigned int i = 0; i < _nLight; i++ )
-    {
-        _center.push_back( ( rand( ) % 40 ) - 20 );
-        _center.push_back( ( rand( ) % 40 ) - 20 );
-        _radius.push_back( rand( ) % 10 );
-    }
-
+    _nLight = 40;
 
 }
 
@@ -162,7 +151,7 @@ void MainWindow::drawScene( )
         for( unsigned int j = 0; j < numSpheres; j++ )
         {
             float materialAmbient[ 3 ] = { 1, 1, 1 };
-            float materialDifuse[ 3 ] = { 0, 0, 1 };
+            float materialDifuse[ 3 ] = { 1, 1, 1 };
             float materialSpecular[ 3 ] = { 1, 1, 1 };
             float materialShiness = 0.3;
 
@@ -446,17 +435,9 @@ void MainWindow::renderQuad( )
 
     for( unsigned int i = 0; i < _nLight; i++ )
     {
-//        _lightPosition[3 * i + 0] = 10 + 40 * std::sin( i * 360.0 / _nLight );
-//        _lightPosition[3 * i + 1] = 20;
-//        _lightPosition[3 * i + 2] = 10 + 40 * std::cos( i * 360.0 / _nLight );
-//        
-////        _lightPosition[3 * i + 0] = _center[2*i+0] + _radius[i] * std::sin( i * 360.0 / _nLight );
-////        _lightPosition[3 * i + 1] = 20;
-////        _lightPosition[3 * i + 2] = _center[2*i+1] + _radius[i] * std::cos( i * 360.0 / _nLight );
-
-                _lightPosition[3 * i + 0] = ( ( rand( ) % 60 ) - 30 );
-                _lightPosition[3 * i + 1] = 20;//( ( rand( ) % 60 ) - 30 );
-                _lightPosition[3 * i + 2] = ( ( rand( ) % 60 ) - 30 );
+        _lightPosition[3 * i + 0] = ( ( rand( ) % 60 ) - 30 );
+        _lightPosition[3 * i + 1] = 20; //( ( rand( ) % 60 ) - 30 );
+        _lightPosition[3 * i + 2] = ( ( rand( ) % 60 ) - 30 );
 
         int idx = rand( ) % 13;
 

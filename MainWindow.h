@@ -85,9 +85,6 @@ private:
     std::vector < float > _lightAmbient;
 
     unsigned int _nLight;
-    
-    std::vector< float > _center;
-    std::vector< float > _radius;
 
 
 private:
